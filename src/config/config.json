@@ -1,10 +1,11 @@
 {
   "development": {
-    "username": "root",
-    "password": null,
-    "database": "rainy_words_adventure",
+    "username": "C##BANK1",
+    "password": "123456",
+    "database": "bankdbtest",
     "host": "127.0.0.1",
-    "dialect": "mysql"
+    "dialect": "oracle",
+    "port": "1522"
   },
   "test": {
     "username": "root",
