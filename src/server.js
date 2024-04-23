@@ -42,5 +42,5 @@ connectDatabase();
 let port = process.env.PORT || 1000;
 
 app.listen(port, () => {
-  console.log("Backend rainy words adventure is running on the port: " + port);
+  console.log("Backend banking is running on the port: " + port);
 });
