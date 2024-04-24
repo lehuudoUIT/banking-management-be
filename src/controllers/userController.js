@@ -18,8 +18,8 @@ let handleLogin = async (req, res) => {
 
 const postCreateUser = async (req, res) => {
   let data = req.body;
-  let user = await createUser(data);
-  res.status(200).json(user);
+  await createUser(data);
+  res.status(200).json();
 };
 
 module.exports = {

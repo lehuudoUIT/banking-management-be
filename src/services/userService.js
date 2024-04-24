@@ -57,7 +57,6 @@ let handleUserLogin = (username, password) => {
 
 const createUser = async (data) => {
   let {
-    NgayDK,
     NgheNghiep,
     Email,
     SDT,
@@ -72,20 +71,58 @@ const createUser = async (data) => {
   } = data;
 
   try {
-    const user = await db.NguoiDung.create({
-      NgayDK: NgayDK,
-      NgheNghiep: NgheNghiep,
-      Email: Email,
-      SDT: SDT,
-      DiaChi: DiaChi,
-      CCCD: CCCD,
-      HoTen: HoTen,
-      NgaySinh: NgaySinh,
-      GioiTinh: GioiTinh,
-      username: username,
-      password: password,
-      MaNhom: MaNhom,
+    // const user = await db.NguoiDung.create({
+    //   NgayDK: new Date().,
+    //   NgheNghiep: NgheNghiep,
+    //   Email: Email,
+    //   SDT: SDT,
+    //   DiaChi: DiaChi,
+    //   CCCD: CCCD,
+    //   HoTen: HoTen,
+    //   NgaySinh: new Date().toISOString(),
+    //   GioiTinh: GioiTinh,
+    //   username: username,
+    //   password: password,
+    //   MaNhom: MaNhom,
+    // });
+
+    // const user = await db.NguoiDung.create({
+    //   NgayDK: new Date().toString(),
+    //   NgheNghiep: "BacSi",
+    //   Email: "letoanlatao@gmail.com",
+    //   SDT: "0123456",
+    //   DiaChi: "HCM",
+    //   CCCD: "12563987",
+    //   HoTen: "Le Toan",
+    //   NgaySinh: new Date().toString(),
+    //   GioiTinh: 1,
+    //   username: "taolaletoan",
+    //   password: "123456",
+    //   MaNhom: 1,
+    // });
+
+    let plsql = `
+    BEGIN
+    P_THEM_NGUOIDUNG (:nghenghiep, :email, :sdt, :diachi, :cccd, :hoten, :ngaysinh, :gioitinh, :username, :password, :manhom);
+    END;
+    `;
+
+    let user = await db.sequelize.query(plsql, {
+      replacements: {
+        nghenghiep: NgheNghiep,
+        email: Email,
+        sdt: SDT,
+        diachi: DiaChi,
+        cccd: CCCD,
+        hoten: HoTen,
+        ngaysinh: NgaySinh,
+        gioitinh: GioiTinh,
+        username: username,
+        password: password,
+        manhom: MaNhom,
+      },
     });
+
     return user;
   } catch (error) {
     console.log(error);

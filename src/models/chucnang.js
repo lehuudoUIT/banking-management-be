@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   ChucNang.init(
     {
-      id: {
+      MaNhom: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,

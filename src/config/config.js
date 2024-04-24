@@ -8,6 +8,17 @@ module.exports = {
     host: process.env.DB_HOST,
     dialect: process.env.DB_DIALECT,
     port: process.env.DB_PORT,
+    dialectOptions: {
+      useUTC: false, // for reading from database
+      typeCast: function (field, next) {
+        // for reading from database
+        if (field.type === "DATE") {
+          return field.string();
+        }
+        return next();
+      },
+    },
+    timezone: "+07:00", // for writing to database
   },
   test: {
     username: "root",
