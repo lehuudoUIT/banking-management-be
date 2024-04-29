@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { handleLogin, postCreateUser } from "../controllers/userController";
-import { getAllUser } from "../controllers/APIController";
 
 import {
   postCreateUserCIF,
