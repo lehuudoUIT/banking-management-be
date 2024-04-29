@@ -14,15 +14,15 @@ module.exports = {
       },
       TongThu: {
         allowNull: false,
-        type: Sequelize.BIGINT,
+        type: Sequelize.INTEGER,
       },
       TongChi: {
         allowNull: false,
-        type: Sequelize.BIGINT,
+        type: Sequelize.INTEGER,
       },
       ChenhLech: {
         allowNull: false,
-        type: Sequelize.BIGINT,
+        type: Sequelize.INTEGER,
       },
     });
   },

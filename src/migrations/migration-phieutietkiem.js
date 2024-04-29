@@ -14,7 +14,7 @@ module.exports = {
       },
       SoTienGui: {
         allowNull: false,
-        type: Sequelize.BIGINT,
+        type: Sequelize.INTEGER,
       },
       LaiSuat: {
         allowNull: false,
@@ -26,7 +26,7 @@ module.exports = {
       },
       SoTienRut: {
         allowNull: false,
-        type: Sequelize.BIGINT,
+        type: Sequelize.INTEGER,
       },
       PhuongThuc: {
         allowNull: false,

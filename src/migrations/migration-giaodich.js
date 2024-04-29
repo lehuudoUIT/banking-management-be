@@ -10,11 +10,11 @@ module.exports = {
       },
       SoTien: {
         allowNull: false,
-        type: Sequelize.BIGINT,
+        type: Sequelize.INTEGER,
       },
       SoDu: {
         allowNull: false,
-        type: Sequelize.BIGINT,
+        type: Sequelize.INTEGER,
       },
       ThoiGian: {
         allowNull: false,
@@ -26,7 +26,7 @@ module.exports = {
       },
       TongTien: {
         allowNull: false,
-        type: Sequelize.BIGINT,
+        type: Sequelize.INTEGER,
       },
       SoTKNhan: {
         allowNull: true,

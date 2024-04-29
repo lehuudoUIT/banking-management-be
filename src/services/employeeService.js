@@ -58,6 +58,75 @@ const createUser = async (
   });
 };
 
+// const countAccount = async (MaKhachHang) => {
+//   return new Promise(async (resolve, reject) => {
+//     try {
+//       const { count, rows } = await db.TaiKhoan.findAndCountAll({
+//         where: {
+//           MaKhachHang: MaKhachHang,
+//         },
+//       });
+//       console.log("Hihih");
+//       resolve(count);
+//     } catch (error) {
+//       reject(undefined);
+//     }
+//   });
+// };
+
+const createAccount = async (MaKhachHang, LoaiTaiKhoan) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let plsql = `
+                BEGIN
+                P_THEM_TAIKHOAN (:stk, :makh, :loaitk, :sodu, :trangthai);
+                END;
+                `;
+
+      const { count, rows } = await db.TaiKhoan.findAndCountAll({
+        where: {
+          MaKhachHang: MaKhachHang,
+        },
+        raw: true,
+      });
+
+      // Define prefix of account number
+      let prefix = count + 1;
+      prefix = prefix.toString();
+      prefix += prefix;
+
+      let user = await db.NguoiDung.findOne({
+        where: {
+          MaNguoiDung: MaKhachHang,
+        },
+        raw: true,
+        attributes: ["CCCD"],
+      });
+
+      await db.sequelize.query(plsql, {
+        replacements: {
+          stk: prefix + user.CCCD,
+          makh: MaKhachHang,
+          loaitk: LoaiTaiKhoan,
+          sodu: "50000",
+          trangthai: "1",
+        },
+      });
+
+      resolve({
+        errMessage: 0,
+        message: "Create account successfully!",
+      });
+    } catch (error) {
+      reject({
+        errCode: 2,
+        message: "Create account failed!",
+      });
+    }
+  });
+};
+
 module.exports = {
   createUser,
+  createAccount,
 };

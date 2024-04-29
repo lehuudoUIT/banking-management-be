@@ -49,6 +49,24 @@ COMMIT;
 END; 
 `;
 
+let P_THEM_TAIKHOAN = `
+CREATE OR REPLACE PROCEDURE P_THEM_TAIKHOAN(
+    V_SoTaiKhoan IN "TaiKhoan"."SoTaiKhoan"%TYPE,
+    N_MaKhachHang IN "TaiKhoan"."MaKhachHang"%TYPE,
+    V_LoaiTaiKhoan IN "TaiKhoan"."LoaiTaiKhoan"%TYPE, 
+    N_SoDu IN "TaiKhoan"."SoDu"%TYPE, 
+    V_TrangThai IN "TaiKhoan"."TrangThai"%TYPE
+)
+IS
+BEGIN
+	
+	INSERT INTO "TaiKhoan" ("SoTaiKhoan","MaKhachHang","LoaiTaiKhoan","SoDu","NgayMo","TrangThai") VALUES (V_SoTaiKhoan, N_MaKhachHang, V_LoaiTaiKhoan, N_SoDu, CURRENT_TIMESTAMP, V_TrangThai); 	
+	COMMIT;
+END;
+`;
+
+let i = 1;
+
 const createProcedure = async (procedure) => {
   await db.sequelize.query(procedure);
   return;
@@ -56,3 +74,4 @@ const createProcedure = async (procedure) => {
 
 createProcedure(P_THEM_NGUOIDUNG);
 createProcedure(P_THEM_NGUOIDUNG_SAMPLE);
+createProcedure(P_THEM_TAIKHOAN);

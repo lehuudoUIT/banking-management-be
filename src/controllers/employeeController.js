@@ -1,4 +1,4 @@
-import { createUser } from "../services/employeeService";
+import { createUser, createAccount } from "../services/employeeService";
 
 const postCreateUserCIF = async (req, res) => {
   let {
@@ -48,7 +48,18 @@ const postCreateUserCIF = async (req, res) => {
   );
   return res.status(200).json(response);
 };
-const postCreateUserAccount = async (req, res) => {};
+const postCreateUserAccount = async (req, res) => {
+  let { MaKhachHang, LoaiTaiKhoan } = req.body;
+
+  if (!MaKhachHang || !LoaiTaiKhoan)
+    return res.status(500).json({
+      errCode: 1,
+      message: "Missing input parameter !",
+    });
+
+  let response = await createAccount(MaKhachHang, LoaiTaiKhoan);
+  return res.status(200).json(response);
+};
 const postWithdrawAccount = async (req, res) => {};
 const postDepositAccount = async (req, res) => {};
 const postWithdrawSaving = async (req, res) => {};

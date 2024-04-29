@@ -5,7 +5,7 @@ module.exports = {
       SoTaiKhoan: {
         allowNull: false,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
       },
       MaKhachHang: {
         allowNull: false,
@@ -17,7 +17,7 @@ module.exports = {
       },
       SoDu: {
         allowNull: false,
-        type: Sequelize.BIGINT,
+        type: Sequelize.INTEGER,
       },
       NgayMo: {
         allowNull: false,
