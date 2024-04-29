@@ -5,7 +5,6 @@ let router = Router();
 let initWebRoutes = (app) => {
   // example login
   router.post("/api/login", handleLogin);
-  router.post("/api/create-user", postCreateUser);
 
   return app.use("/", router);
 };

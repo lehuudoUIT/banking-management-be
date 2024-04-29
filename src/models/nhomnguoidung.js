@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      // NhomNguoiDung.hasMany(models.NguoiDung);
+      // NhomNguoiDung.belongsToMany(models.ChucNang, {
+      //   through: "PhanQuyen",
+      // });
     }
   }
   NhomNguoiDung.init(
