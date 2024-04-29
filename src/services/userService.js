@@ -63,7 +63,6 @@ const checkExistUser = async (Email, SDT, CCCD, username) => {
     },
     raw: true,
   });
-  console.log(email);
   if (email) message.push("Email has already existed !");
   let sdt = await db.NguoiDung.findOne({
     where: {
@@ -71,7 +70,6 @@ const checkExistUser = async (Email, SDT, CCCD, username) => {
     },
     raw: true,
   });
-  console.log(sdt);
 
   if (sdt) message.push("SDT has already existed !");
 
@@ -81,7 +79,6 @@ const checkExistUser = async (Email, SDT, CCCD, username) => {
     },
     raw: true,
   });
-  console.log(cccd);
 
   if (cccd) message.push("CCCD has already existed !");
 
@@ -91,7 +88,6 @@ const checkExistUser = async (Email, SDT, CCCD, username) => {
     },
     raw: true,
   });
-  console.log(user);
 
   if (user) message.push("username has already existed !");
   return message;
