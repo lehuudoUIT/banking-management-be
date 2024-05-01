@@ -1,4 +1,3 @@
-console.log("Sql command");
 let db = require("./models/index");
 
 let P_THEM_NGUOIDUNG = `
@@ -64,13 +63,20 @@ BEGIN
 	COMMIT;
 END;
 `;
-
 let i = 1;
-
 const createProcedure = async (procedure) => {
-  await db.sequelize.query(procedure);
+  try {
+    await db.sequelize.query(procedure);
+    console.log("Creating procedure");
+    console.log("------------------");
+  } catch (error) {
+    console.log("Create procedure fail, check connect to database!");
+  }
+
   return;
 };
+
+console.log("Starting create procedure...");
 
 createProcedure(P_THEM_NGUOIDUNG);
 createProcedure(P_THEM_NGUOIDUNG_SAMPLE);

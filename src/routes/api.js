@@ -13,6 +13,10 @@ import {
   postChangeRule,
 } from "../controllers/employeeController";
 
+import { postCreateTransactionType } from "../controllers/adminController";
+
+import { getAllAccountById } from "../controllers/customerController";
+
 let router = Router();
 
 let initAPIRoutes = (app) => {
@@ -23,12 +27,16 @@ let initAPIRoutes = (app) => {
   router.post("/employee/account/deposit", postDepositAccount);
   router.post("/employee/saving/withdraw", postWithdrawSaving);
   router.post("/employee/saving/deposit", postDepositSaving);
-  router.post("/employee/saving/get-all", getAllSaving);
+  router.get("/employee/saving/get-all", getAllSaving);
   router.post("/employee/statement/create", postCreateStatement);
   router.post("/employee/report/create", postCreateReport);
   router.post("/employee/rule/change", postChangeRule);
 
   // customer api
+  router.post("/employee/rule/change", postChangeRule);
+
+  // admin api
+  router.get("/customer/account/get-all", getAllAccountById);
 
   return app.use("/api/v1/", router);
 };

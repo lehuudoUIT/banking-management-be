@@ -58,22 +58,6 @@ const createUser = async (
   });
 };
 
-// const countAccount = async (MaKhachHang) => {
-//   return new Promise(async (resolve, reject) => {
-//     try {
-//       const { count, rows } = await db.TaiKhoan.findAndCountAll({
-//         where: {
-//           MaKhachHang: MaKhachHang,
-//         },
-//       });
-//       console.log("Hihih");
-//       resolve(count);
-//     } catch (error) {
-//       reject(undefined);
-//     }
-//   });
-// };
-
 const createAccount = async (MaKhachHang, LoaiTaiKhoan) => {
   return new Promise(async (resolve, reject) => {
     try {
