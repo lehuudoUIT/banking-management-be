@@ -8,7 +8,8 @@
     "start": "nodemon --exec babel-node src/server.js",
     "build-src": "babel src -d build --copy-files",
     "build": "node ./build/server.js",
-    "sql": "node ./src/sql.js"
+    "sql": "node ./src/sql.js",
+    "data": "node ./src/data.js"
   },
   "repository": {
     "type": "git",

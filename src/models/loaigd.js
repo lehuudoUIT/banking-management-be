@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
   LoaiGD.init(
     {
       MaLoaiGD: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
       },
@@ -24,6 +24,8 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "LoaiGD",
+      tableName: "LoaiGiaoDich",
+      timestamps: false,
     }
   );
   return LoaiGD;

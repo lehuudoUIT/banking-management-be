@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
   LoaiTietKiem.init(
     {
       MaLoaiTietKiem: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
       },

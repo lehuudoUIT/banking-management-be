@@ -53,6 +53,7 @@ const createUser = async (
       reject({
         errCode: 2,
         message: "Create user failed!",
+        errMess: error,
       });
     }
   });
@@ -105,7 +106,100 @@ const createAccount = async (MaKhachHang, LoaiTaiKhoan) => {
       reject({
         errCode: 2,
         message: "Create account failed!",
+        errMess: error,
       });
+    }
+  });
+};
+
+const isExistedCCCD = async (CCCD) => {
+  let cccd = await db.NguoiDung.findOne({
+    where: {
+      CCCD: CCCD,
+    },
+    raw: true,
+    attributes: ["CCCD"],
+  });
+
+  return cccd;
+};
+
+const createWithdrawTransaction = async (
+  CCCD,
+  SoTien,
+  NoiDung,
+  SoTKRut,
+  MaLoaiGD,
+  MaNhanVien
+) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let isExisted = await isExistedCCCD(CCCD);
+      if (!isExisted) {
+        resolve({
+          message: "Sender does not exist!",
+          errCode: 1,
+        });
+      } else {
+        let taiKhoanRut = await db.TaiKhoan.findOne({
+          where: {
+            SoTaiKhoan: SoTKRut,
+          },
+          raw: true,
+        });
+        if (!taiKhoanRut) {
+          resolve({
+            message: "Withdrawal account does not exist!",
+            errCode: 2,
+          });
+        } else {
+          let loaigd = await db.LoaiGD.findOne({
+            where: {
+              MaLoaiGD: MaLoaiGD,
+            },
+            raw: true,
+          });
+
+          let TongTien = SoTien + loaigd.Phi;
+
+          taiKhoanRut.SoDu -= TongTien;
+          if (taiKhoanRut.SoDu <= 50000) {
+            return resolve({
+              message: "Withdrawal account does not have enough money!",
+              errCode: 3,
+            });
+          }
+
+          await taiKhoanRut.save();
+
+          let plsql = `
+          BEGIN
+          P_THEM_GIAODICH (:sotien, :sodu, :noidung, :tongtien, :sotknhan, :sotkrut, :maloaigd, :manv, :cccd);
+          END;
+          `;
+
+          await db.sequelize.query(plsql, {
+            replacements: {
+              sotien: SoTien,
+              sodu: taiKhoanRut.SoDu,
+              noidung: NoiDung,
+              tongtien: TongTien,
+              sotknhan: null,
+              stkrut: SoTKRut,
+              maloaigd: MaLoaiGD,
+              manv: MaNhanVien,
+              cccd: CCCD,
+            },
+          });
+
+          resolve({
+            message: `With draw from ${SoTKRut} successfully!`,
+            errCode: 0,
+          });
+        }
+      }
+    } catch (error) {
+      console.log(error);
     }
   });
 };
@@ -113,4 +207,5 @@ const createAccount = async (MaKhachHang, LoaiTaiKhoan) => {
 module.exports = {
   createUser,
   createAccount,
+  createWithdrawTransaction,
 };

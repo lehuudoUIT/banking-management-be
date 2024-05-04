@@ -14,15 +14,15 @@ module.exports = (sequelize, DataTypes) => {
   PhieuTietKiem.init(
     {
       MaPhieu: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
       },
       NgayMo: DataTypes.DATE,
-      SoTienGui: DataTypes.BIGINT,
+      SoTienGui: DataTypes.INTEGER,
       LaiSuat: DataTypes.FLOAT,
       NgayRut: DataTypes.DATE,
-      SoTienRut: DataTypes.BIGINT,
+      SoTienRut: DataTypes.INTEGER,
       PhuongThuc: DataTypes.STRING,
       TrangThai: DataTypes.BOOLEAN,
       MaLoaiTietKiem: DataTypes.INTEGER,

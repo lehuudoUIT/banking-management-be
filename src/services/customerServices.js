@@ -23,6 +23,53 @@ const getAccountById = async (MaKhachHang) => {
   });
 };
 
+const createTransaction = async (
+  SoTien,
+  NoiDung,
+  SoTKNhan,
+  SoTKRut,
+  MaLoaiGD,
+  MaNhanVien,
+  CCCD
+) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let plsql = `
+      BEGIN
+      P_THEM_GIAODICH (:sotien , :noidung, :sotknhan, :sotkrut, :maloaigd, :manv, :cccd);
+      END;
+      `;
+      await db.sequelize
+        .query(plsql, {
+          replacements: {
+            sotien: SoTien,
+            noidung: NoiDung,
+            sotknhan: SoTKNhan,
+            sotkrut: SoTKRut,
+            maloaigd: MaLoaiGD,
+            manv: MaNhanVien,
+            cccd: CCCD,
+          },
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+
+      resolve({
+        errMessage: 0,
+        message: "Create tracsaction sucessfully!",
+      });
+    } catch (error) {
+      reject({
+        errCode: 2,
+        message: "Create transaction failed!",
+        error: error,
+      });
+    }
+  });
+};
+
 module.exports = {
   getAccountById,
+  createTransaction,
 };
