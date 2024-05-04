@@ -4,6 +4,8 @@ import {
   createWithdrawTransaction,
 } from "../services/employeeService";
 
+import { createTransaction } from "../services/customerServices";
+
 const postCreateUserCIF = async (req, res) => {
   let {
     NgheNghiep,
@@ -64,6 +66,7 @@ const postCreateUserAccount = async (req, res) => {
   let response = await createAccount(MaKhachHang, LoaiTaiKhoan);
   return res.status(200).json(response);
 };
+
 const postWithdrawAccount = async (req, res) => {
   const { CCCD, SoTien, NoiDung, SoTKRut, MaLoaiGD, MaNhanVien } = req.body;
   if ((!CCCD || !SoTien || !NoiDung, !SoTKRut, !MaLoaiGD, !MaNhanVien))
@@ -72,18 +75,42 @@ const postWithdrawAccount = async (req, res) => {
       message: "Missing input parameter !",
     });
 
-  let response = await createWithdrawTransaction(
-    CCCD,
+  //Create transaction with STK nguoi nhan la null
+
+  let response = await createTransaction(
     SoTien,
     NoiDung,
+    null,
     SoTKRut,
     MaLoaiGD,
-    MaNhanVien
+    MaNhanVien,
+    CCCD
   );
 
   return res.status(200).json(response);
 };
-const postDepositAccount = async (req, res) => {};
+const postDepositAccount = async (req, res) => {
+  const { CCCD, SoTien, NoiDung, SoTKNhan, MaLoaiGD, MaNhanVien } = req.body;
+  if ((!CCCD || !SoTien || !NoiDung, !SoTKNhan, !MaLoaiGD, !MaNhanVien))
+    return res.status(500).json({
+      errCode: 1,
+      message: "Missing input parameter !",
+    });
+
+  //Create transaction with STK nguoi nhan la null
+
+  let response = await createTransaction(
+    SoTien,
+    NoiDung,
+    SoTKNhan,
+    null,
+    MaLoaiGD,
+    MaNhanVien,
+    CCCD
+  );
+
+  return res.status(200).json(response);
+};
 const postWithdrawSaving = async (req, res) => {};
 const postDepositSaving = async (req, res) => {};
 const getAllSaving = async (req, res) => {};

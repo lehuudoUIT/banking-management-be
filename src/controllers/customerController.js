@@ -17,17 +17,9 @@ const getAllAccountById = async (req, res) => {
 };
 
 const postTransferAccount = async (req, res) => {
-  let { SoTien, NoiDung, SoTKNhan, SoTKRut, MaLoaiGD, MaNhanVien, CCCD } =
-    req.body;
+  const { SoTien, NoiDung, SoTKNhan, SoTKRut, MaLoaiGD, MaNhanVien } = req.body;
 
-  if (
-    !SoTien ||
-    !NoiDung ||
-    !SoTKNhan ||
-    !SoTKRut ||
-    !MaLoaiGD ||
-    !MaNhanVien
-  ) {
+  if (!SoTien || !NoiDung || !SoTKNhan || !SoTKRut || !MaLoaiGD) {
     return res.status(500).json({
       message: "Missing input parameters",
       errCode: 1,
@@ -40,8 +32,8 @@ const postTransferAccount = async (req, res) => {
     SoTKNhan,
     SoTKRut,
     MaLoaiGD,
-    MaNhanVien,
-    CCCD
+    null,
+    null
   );
   return res.status(200).json(response);
 };
