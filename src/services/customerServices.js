@@ -52,7 +52,11 @@ const createTransaction = async (
           },
         })
         .catch((err) => {
-          console.log(err);
+          resolve({
+            errMessage: 3,
+            message: "Create tracsaction failed!",
+            error: err,
+          });
         });
 
       resolve({

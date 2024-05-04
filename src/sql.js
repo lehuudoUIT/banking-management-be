@@ -72,9 +72,7 @@ CREATE OR REPLACE PROCEDURE P_THEM_GIAODICH(
   V_SoTKRut IN "GiaoDich"."SoTKRut"%TYPE, 
   N_MaLoaiGD IN "GiaoDich"."MaLoaiGD"%TYPE, 
   N_MaNhanVien IN "GiaoDich"."MaNhanVien"%TYPE,
-  V_CCCD IN "GiaoDich"."CCCD"%TYPE,
-  N_ERRCODE OUT NUMBER,
-  V_MESSAGE OUT NVARCHAR2
+  V_CCCD IN "GiaoDich"."CCCD"%TYPE
 )
 IS 
 TenLoaiGD "LoaiGiaoDich"."TenLoaiGD"%TYPE;
@@ -84,13 +82,14 @@ TONGTIEN NUMBER;
 PHI NUMBER;
 SODU NUMBER;
 SODUTOITHIEU NUMBER;
+  N_ERRCODE NUMBER;
+  V_MESSAGE NVARCHAR2(255);
 BEGIN
 -- Xác định tên loại giao dịch
 
 SELECT "TenLoaiGD" INTO TenLoaiGD
 FROM "LoaiGiaoDich"
 WHERE "MaLoaiGD" = N_MaLoaiGD;
-
 
 -- HANDLE TRANSFER TRACSACTION
 
@@ -116,7 +115,7 @@ IF TenLoaiGD = 'transfer' THEN
   IF N_SoTien > TienChuyenToiDa THEN
     N_ERRCODE := 2;
     V_MESSAGE := 'So tien chuyen khoan phai nho hon muc toi da';
-    RAISE_APPLICATION_ERROR(-20001, V_MESSAGE);
+    RAISE_APPLICATION_ERROR(-20002, V_MESSAGE);
   END IF;
 
   -- Tính phí chuyển chuyển khoản
@@ -142,7 +141,7 @@ IF TenLoaiGD = 'transfer' THEN
   IF SODU < SODUTOITHIEU THEN
     N_ERRCODE := 3;
     V_MESSAGE := 'So du phai lon hon so tien duy tri tai khoan';
-    RAISE_APPLICATION_ERROR(-20001, V_MESSAGE);
+    RAISE_APPLICATION_ERROR(-20003, V_MESSAGE);
   END IF;
 
   -- Trừ tiền tài khoản gửi
@@ -166,7 +165,7 @@ ELSE
 END IF;
 
 COMMIT;
-END;
+END; 
 `;
 
 const createProcedure = async (procedure) => {
