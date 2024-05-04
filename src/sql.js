@@ -82,7 +82,8 @@ TONGTIEN NUMBER;
 PHI NUMBER;
 SODU NUMBER;
 SODUTOITHIEU NUMBER;
-  N_ERRCODE NUMBER;
+  SOTIENRUTTOITHIEU NUMBER;
+N_ERRCODE NUMBER;
   V_MESSAGE NVARCHAR2(255);
 BEGIN
 -- Xác định tên loại giao dịch
@@ -90,6 +91,20 @@ BEGIN
 SELECT "TenLoaiGD" INTO TenLoaiGD
 FROM "LoaiGiaoDich"
 WHERE "MaLoaiGD" = N_MaLoaiGD;
+
+IF TenLoaiGD IS NULL THEN
+  RAISE_APPLICATION_ERROR(-20004, 'Khong ton tai loai giao dich');
+END IF;	
+  
+-- Tính phí giao dịch
+SELECT "Phi" INTO PHI
+FROM "LoaiGiaoDich"
+WHERE "MaLoaiGD" =	N_MaLoaiGD;
+
+-- Lấy số dư tối thiểu
+SELECT "GiaTri" INTO SODUTOITHIEU
+FROM "ThamSo"
+WHERE "Ten" = 'SoTienDuyTriTaiKhoan';
 
 -- HANDLE TRANSFER TRACSACTION
 
@@ -118,18 +133,8 @@ IF TenLoaiGD = 'transfer' THEN
     RAISE_APPLICATION_ERROR(-20002, V_MESSAGE);
   END IF;
 
-  -- Tính phí chuyển chuyển khoản
-  SELECT "Phi" INTO PHI
-  FROM "LoaiGiaoDich"
-  WHERE "MaLoaiGD" =	N_MaLoaiGD;
-
   -- Tính tổng tiền
   TONGTIEN := PHI + N_SoTien;
-
-  -- Lấy số dư tối thiểu
-  SELECT "GiaTri" INTO SODUTOITHIEU
-  FROM "ThamSo"
-  WHERE "Ten" = 'SoTienDuyTriTaiKhoan';
 
   -- Tính số dư của tài khoản sau khi chuyển
   SELECT "SoDu" INTO SODU
@@ -154,15 +159,56 @@ IF TenLoaiGD = 'transfer' THEN
   SET "SoDu" = "SoDu" + N_SoTien
   WHERE "SoTaiKhoan" = V_SoTKNhan;
 
-  INSERT INTO "GiaoDich" ("SoTien", "SoDu", "ThoiGian","NoiDung","TongTien","SoTKNhan","SoTKRut","MaLoaiGD","MaNhanVien") VALUES (N_SoTien, SODU, CURRENT_TIMESTAMP, V_NoiDung, TONGTIEN, V_SoTKNhan, V_SoTKRut, N_MaLoaiGD, N_MaNhanVien); 
-
 ELSIF TenLoaiGD = 'withdraw' THEN
-  dbms_output.put_line('withdraw');
-ELSIF TenLoaiGD = 'deposit' THEN
-  dbms_output.put_line('deposit');
-ELSE
-  dbms_output.put_line('Khong ton tai loai giao dich');
+  SELECT "GiaTri" INTO SOTIENRUTTOITHIEU
+  FROM "ThamSo"
+  WHERE "Ten" = 'SoTienRutToiThieu';
+
+  IF N_SoTien < SOTIENRUTTOITHIEU THEN
+    N_ERRCODE := 1;
+    V_MESSAGE := 'So tien rut khoan phai lon hon muc toi thieu';
+    RAISE_APPLICATION_ERROR(-20001, V_MESSAGE);
+  END IF;
+
+  -- Tính tổng tiền
+  TONGTIEN := PHI + N_SoTien;
+
+  -- Tính số dư của tài khoản sau khi chuyển
+  SELECT "SoDu" INTO SODU
+  FROM "TaiKhoan"
+  WHERE "SoTaiKhoan" = V_SoTKRut;
+
+  SODU := SODU - TONGTIEN;
+  -- Kiểm tra số dư tối thiểu
+  IF SODU < SODUTOITHIEU THEN
+    N_ERRCODE := 3;
+    V_MESSAGE := 'So du phai lon hon so tien duy tri tai khoan';
+    RAISE_APPLICATION_ERROR(-20003, V_MESSAGE);
+  END IF;
+
+  -- Trừ tiền tài khoản gửi
+  UPDATE "TaiKhoan"
+  SET "SoDu" = SODU
+  WHERE "SoTaiKhoan" = V_SoTKRut;
+
+ELSE -- deposit transaction
+  -- Tính tổng tiền
+  TONGTIEN := N_SoTien - PHI;
+
+  -- Tính số dư của tài khoản sau nộp tiền
+  SELECT "SoDu" INTO SODU
+  FROM "TaiKhoan"
+  WHERE "SoTaiKhoan" = V_SoTKNhan;
+  
+  SODU := SODU + TONGTIEN;
+
+  UPDATE "TaiKhoan"
+  SET "SoDu" = SODU
+  WHERE "SoTaiKhoan" = V_SoTKNhan;
+  
 END IF;
+
+INSERT INTO "GiaoDich" ("SoTien", "SoDu", "ThoiGian","NoiDung","TongTien","SoTKNhan","SoTKRut","MaLoaiGD","MaNhanVien") VALUES (N_SoTien, SODU, CURRENT_TIMESTAMP, V_NoiDung, TONGTIEN, V_SoTKNhan, V_SoTKRut, N_MaLoaiGD, N_MaNhanVien);
 
 COMMIT;
 END; 

@@ -17,7 +17,7 @@ const getAllAccountById = async (req, res) => {
 };
 
 const postTransferAccount = async (req, res) => {
-  const { SoTien, NoiDung, SoTKNhan, SoTKRut, MaLoaiGD, MaNhanVien } = req.body;
+  const { SoTien, NoiDung, SoTKNhan, SoTKRut, MaLoaiGD } = req.body;
 
   if (!SoTien || !NoiDung || !SoTKNhan || !SoTKRut || !MaLoaiGD) {
     return res.status(500).json({
