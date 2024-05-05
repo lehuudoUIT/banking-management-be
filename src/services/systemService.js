@@ -49,6 +49,44 @@ const checkExistAccount = async (SoTaiKhoan) => {
   });
 };
 
+let handleUserLogin = (username, password) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let userData = {};
+      // User already exists
+      let user = await db.NguoiDung.findOne({
+        where: { username: username },
+        raw: true,
+      });
+      if (user) {
+        let check;
+        if (user.password === password) {
+          check = 1;
+        } else {
+          check = 0;
+        }
+        if (check) {
+          userData.errCode = 0;
+          userData.errMessage = "Login success";
+          userData.user = user;
+          userData.user.password = undefined;
+        } else {
+          userData.errCode = 1;
+          userData.errMessage = "Wrong password!";
+        }
+      } else {
+        userData.errCode = 1;
+        userData.errMessage = `Your username isn's exists in our system. Please try again!`;
+      }
+
+      resolve(userData);
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 module.exports = {
   checkExistAccount,
+  handleUserLogin,
 };
