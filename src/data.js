@@ -46,6 +46,21 @@ VALUES(8, 'ThoiGianGuiTietKiemToiThieu', 15);
 COMMIT;
 `;
 
+let LoaiTietKiem = `
+INSERT INTO "LoaiTietKiem"
+("MaLoaiTietKiem", "KyHan", "LaiSuat")
+VALUES(1, '1 tháng', 0.017);
+INSERT INTO "LoaiTietKiem"
+("MaLoaiTietKiem", "KyHan", "LaiSuat")
+VALUES(2, '3 tháng', 0.02);
+INSERT INTO "LoaiTietKiem"
+("MaLoaiTietKiem", "KyHan", "LaiSuat")
+VALUES(3, '6 tháng', 0.03);
+INSERT INTO "LoaiTietKiem"
+("MaLoaiTietKiem", "KyHan", "LaiSuat")
+VALUES(4, '12 tháng', 0.047);
+`;
+
 const insertData = async (data) => {
   try {
     await db.sequelize.query(data);

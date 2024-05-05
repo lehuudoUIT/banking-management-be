@@ -1,4 +1,8 @@
-import { checkExistAccount, handleUserLogin } from "../services/systemService";
+import {
+  checkExistAccount,
+  handleUserLogin,
+  sendOTP,
+} from "../services/systemService";
 
 const postCheckExistAccount = async (req, res) => {
   const SoTaiKhoan = req.body.SoTaiKhoan;
@@ -27,7 +31,20 @@ let handleLogin = async (req, res) => {
   return res.status(200).json(response);
 };
 
+const handleSendOtp = async (req, res) => {
+  const { otp, email } = req.body;
+  if (!otp || !email) {
+    return res.status(500).json({
+      errCode: 1,
+      message: "Missing input parameter !",
+    });
+  }
+  let response = await sendOTP(otp, email);
+  return res.status(200).json(response);
+};
+
 module.exports = {
   postCheckExistAccount,
   handleLogin,
+  handleSendOtp,
 };

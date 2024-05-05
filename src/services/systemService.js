@@ -1,4 +1,6 @@
 import db from "../models/index";
+require("dotenv").config();
+const nodemailer = require("nodemailer");
 
 const checkExistAccount = async (SoTaiKhoan) => {
   return new Promise(async (resolve, reject) => {
@@ -86,7 +88,61 @@ let handleUserLogin = (username, password) => {
   });
 };
 
+const sendOTP = async (otp, email) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true, // Use `true` for port 465, `false` for all other ports
+        auth: {
+          user: process.env.EMAIL_APP,
+          pass: process.env.EMAIL_APP_PASWORD,
+        },
+      });
+
+      const info = await transporter
+        .sendMail({
+          from: '"Ngân hàng BBank 👻" <lehuudouit@gmail.com>', // sender address
+          to: email, // list of receivers
+          subject: "Mã OTP xác nhận giao dịch", // Subject line
+          text: "Mã OTP của bạn là...", // plain text body
+          html: `Mã OTP của bạn là <b>${otp}</b>`, // html body
+        })
+        .then((info) => {
+          resolve({
+            errMessage: 0,
+            message: "Send OTP sucessfully!",
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+          resolve({
+            errMessage: 1,
+            message: "Send OTP failed!",
+            err: err,
+          });
+        });
+    } catch (error) {
+      reject({
+        errMessage: 1,
+        message: "Send OTP failed!",
+        err: error,
+      });
+    }
+  });
+};
+
+// async..await is not allowed in global scope, must use a wrapper
+async function main() {
+  // send mail with defined transport object
+
+  console.log("Message sent: %s", info.messageId);
+  // Message sent: <d786aa62-4e0a-070a-47ed-0b0666549519@ethereal.email>
+}
+
 module.exports = {
   checkExistAccount,
   handleUserLogin,
+  sendOTP,
 };

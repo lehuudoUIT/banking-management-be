@@ -17,6 +17,7 @@ import { postCreateTransactionType } from "../controllers/adminController";
 import {
   postCheckExistAccount,
   handleLogin,
+  handleSendOtp,
 } from "../controllers/systemController";
 
 import {
@@ -49,6 +50,7 @@ let initAPIRoutes = (app) => {
   //system
   router.post("/system/account/check-exist", postCheckExistAccount);
   router.post("/login", handleLogin);
+  router.post("/system/otp/send", handleSendOtp);
 
   return app.use("/api/v1/", router);
 };
