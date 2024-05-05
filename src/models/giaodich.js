@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   GiaoDich.init(
     {
-      MaGD: {
+      MaGiaoDich: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
@@ -31,6 +31,8 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "GiaoDich",
+      freezeTableName: true,
+      timestamps: false,
     }
   );
   return GiaoDich;
