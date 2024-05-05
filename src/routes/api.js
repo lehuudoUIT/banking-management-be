@@ -14,6 +14,7 @@ import {
 } from "../controllers/employeeController";
 
 import { postCreateTransactionType } from "../controllers/adminController";
+import { postCheckExistAccount } from "../controllers/systemController";
 
 import {
   getAllAccountById,
@@ -41,6 +42,9 @@ let initAPIRoutes = (app) => {
 
   //admin
   router.post("/employee/rule/change", postChangeRule);
+
+  //system
+  router.post("/system/account/check-exist", postCheckExistAccount);
 
   return app.use("/api/v1/", router);
 };
