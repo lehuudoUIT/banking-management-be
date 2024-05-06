@@ -23,6 +23,7 @@ import {
 import {
   getAllAccountById,
   postTransferAccount,
+  postDepositSavingOnline,
 } from "../controllers/customerController";
 
 let router = Router();
@@ -43,6 +44,7 @@ let initAPIRoutes = (app) => {
   // customer api
   router.post("/customer/account/get-all", getAllAccountById);
   router.post("/customer/account/transfer", postTransferAccount);
+  router.post("/customer/saving/deposit", postDepositSavingOnline);
 
   //admin
   router.post("/employee/rule/change", postChangeRule);

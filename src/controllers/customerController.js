@@ -3,6 +3,8 @@ import {
   createTransaction,
 } from "../services/customerServices";
 
+import { depositSaving } from "../services/savingService";
+
 const getAllAccountById = async (req, res) => {
   const MaKhachHang = req.body.MaKhachHang;
   if (!MaKhachHang) {
@@ -38,7 +40,27 @@ const postTransferAccount = async (req, res) => {
   return res.status(200).json(response);
 };
 
+const postDepositSavingOnline = async (req, res) => {
+  const { SoTienGui, PhuongThuc, MaLoaiTietKiem, MaKhachHang, SoTK } = req.body;
+  if (!SoTienGui || !PhuongThuc || !MaLoaiTietKiem || !MaKhachHang || !SoTK) {
+    return res.status(500).json({
+      message: "Missing input parameters",
+      errCode: 1,
+    });
+  }
+  let response = await depositSaving(
+    SoTienGui,
+    PhuongThuc,
+    MaLoaiTietKiem,
+    MaKhachHang,
+    SoTK,
+    null
+  );
+  return res.status(200).json(response);
+};
+
 module.exports = {
   getAllAccountById,
   postTransferAccount,
+  postDepositSavingOnline,
 };

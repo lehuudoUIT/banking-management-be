@@ -20,10 +20,13 @@ module.exports = (sequelize, DataTypes) => {
       },
       KyHan: DataTypes.INTEGER,
       LaiSuat: DataTypes.FLOAT,
+      GhiChu: DataTypes.STRING,
     },
     {
       sequelize,
       modelName: "LoaiTietKiem",
+      freezeTableName: true,
+      timestamps: false,
     }
   );
   return LoaiTietKiem;

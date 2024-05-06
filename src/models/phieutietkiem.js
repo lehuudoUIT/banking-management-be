@@ -27,12 +27,14 @@ module.exports = (sequelize, DataTypes) => {
       TrangThai: DataTypes.BOOLEAN,
       MaLoaiTietKiem: DataTypes.INTEGER,
       MaKhachHang: DataTypes.INTEGER,
-      SoTaiKhoan: DataTypes.STRING,
+      SoTK: DataTypes.STRING,
       MaNhanVien: DataTypes.INTEGER,
     },
     {
       sequelize,
       modelName: "PhieuTietKiem",
+      freezeTableName: true,
+      timestamps: false,
     }
   );
   return PhieuTietKiem;
