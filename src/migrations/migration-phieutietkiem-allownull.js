@@ -19,15 +19,15 @@ module.exports = {
   down: (queryInterface, Sequelize) => {
     return Promise.all([
       queryInterface.changeColumn("PhieuTietKiem", "SoTienRut", {
-        allowNull: true,
+        allowNull: false,
         type: Sequelize.INTEGER,
       }),
       queryInterface.changeColumn("PhieuTietKiem", "NgayRut", {
-        allowNull: true,
+        allowNull: false,
         type: Sequelize.DATE,
       }),
       queryInterface.changeColumn("PhieuTietKiem", "MaKhachHang", {
-        allowNull: true,
+        allowNull: false,
         type: Sequelize.INTEGER,
       }),
     ]);

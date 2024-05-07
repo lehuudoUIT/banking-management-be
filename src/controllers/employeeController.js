@@ -6,6 +6,8 @@ import {
 
 import { createTransaction } from "../services/customerServices";
 
+import { depositSaving } from "../services/savingService";
+
 const postCreateUserCIF = async (req, res) => {
   let {
     NgheNghiep,
@@ -112,7 +114,32 @@ const postDepositAccount = async (req, res) => {
   return res.status(200).json(response);
 };
 const postWithdrawSaving = async (req, res) => {};
-const postDepositSaving = async (req, res) => {};
+
+const postDepositSavingOffline = async (req, res) => {
+  const { SoTienGui, PhuongThuc, MaLoaiTietKiem, MaKhachHang, MaNhanVien } =
+    req.body;
+  if (
+    !SoTienGui ||
+    !PhuongThuc ||
+    !MaLoaiTietKiem ||
+    !MaKhachHang ||
+    !MaNhanVien
+  ) {
+    return res.status(500).json({
+      message: "Missing input parameters",
+      errCode: 1,
+    });
+  }
+  let response = await depositSaving(
+    SoTienGui,
+    PhuongThuc,
+    MaLoaiTietKiem,
+    MaKhachHang,
+    null,
+    MaNhanVien
+  );
+  return res.status(200).json(response);
+};
 const getAllSaving = async (req, res) => {};
 const postCreateStatement = async (req, res) => {};
 const postCreateReport = async (req, res) => {};
@@ -124,9 +151,9 @@ module.exports = {
   postWithdrawAccount,
   postDepositAccount,
   postWithdrawSaving,
-  postDepositSaving,
   getAllSaving,
   postCreateStatement,
   postCreateReport,
   postChangeRule,
+  postDepositSavingOffline,
 };

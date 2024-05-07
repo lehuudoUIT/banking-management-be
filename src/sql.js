@@ -214,6 +214,81 @@ COMMIT;
 END; 
 `;
 
+let P_THEM_PHIEUTIETKIEM = `
+CREATE OR REPLACE PROCEDURE P_THEM_PHIEUTIETKIEM(
+  N_SoTienGui IN "PhieuTietKiem"."SoTienGui"%TYPE,
+  V_PhuongThuc IN "PhieuTietKiem"."PhuongThuc"%TYPE,
+  N_MaLoaiTietKiem IN "PhieuTietKiem"."MaLoaiTietKiem"%TYPE,
+  N_MaKhachHang IN "PhieuTietKiem"."MaKhachHang"%TYPE,
+  V_SoTK IN "PhieuTietKiem"."SoTK"%TYPE,
+  N_MaNhanVien IN "PhieuTietKiem"."MaNhanVien"%TYPE
+)
+IS 
+SoDu NUMBER;
+SoDuToiThieu NUMBER;
+  TienTietKiemToiThieu NUMBER;
+  V_MESSAGE NVARCHAR2(255);
+  MaLoaiGD NUMBER;
+  MaPhieu NUMBER;
+   LaiSuat "PhieuTietKiem"."LaiSuat"%TYPE;
+BEGIN
+
+SELECT "GiaTri" INTO TienTietKiemToiThieu
+FROM "ThamSo"
+WHERE "Ten" = 'TienGuiTietKiemToiThieu';
+
+SELECT "GiaTri" INTO SoDuToiThieu
+FROM "ThamSo"
+WHERE "Ten" = 'SoTienDuyTriTaiKhoan';
+
+SELECT "LaiSuat" INTO LaiSuat
+FROM "LoaiTietKiem"
+WHERE "MaLoaiTietKiem" = N_MaLoaiTietKiem;
+
+-- Kiểm tra tiền gửi tối thiểu
+IF N_SoTienGui < TienTietKiemToiThieu THEN
+  V_MESSAGE := 'So tien gui tiet kiem phai lon hon ' || TienTietKiemToiThieu;
+  RAISE_APPLICATION_ERROR(-20001, V_MESSAGE);
+END IF;
+
+IF V_SoTK IS NOT NULL THEN
+
+  -- Kiểm tra số dư tối thiểu
+  SELECT "SoDu" INTO SoDu
+  FROM "TaiKhoan"
+  WHERE "SoTaiKhoan" = V_SoTK;
+
+  SoDu := SoDu - 	N_SoTienGui;
+  
+  IF SoDu < SoDuToiThieu THEN
+    V_MESSAGE := 'So du con lai khong du de thuc hien giao dich ';
+    RAISE_APPLICATION_ERROR(-20002, V_MESSAGE);
+  END IF;
+  
+  -- Trừ tiền tài khoản gửi
+  UPDATE "TaiKhoan"
+  SET "SoDu" = SoDu
+  WHERE "SoTaiKhoan" = V_SoTK;
+
+END IF;
+
+-- Lấy mã gd tiết kiệm
+SELECT "MaLoaiGD" INTO MaLoaiGD
+FROM "LoaiGiaoDich"
+WHERE "TenLoaiGD" = 'saving';
+
+MaPhieu := "C##BANK1"."ISEQ$$_77255".nextval;
+
+
+-- Lưu phiếu tiết kiệm
+INSERT INTO "PhieuTietKiem" ("MaPhieu", "NgayMo", "SoTienGui", "LaiSuat", "NgayRut", "SoTienRut", "PhuongThuc", "TrangThai", "MaLoaiTietKiem", "MaKhachHang", "SoTK", "MaNhanVien") VALUES (MaPhieu, CURRENT_TIMESTAMP, N_SoTienGui, LaiSuat, NULL, NULL, V_PhuongThuc, 1, N_MaLoaiTietKiem, N_MaKhachHang, V_SoTK, NULL);
+
+-- Lưu giao dịch nộp tiền vào bảng giao dịch
+INSERT INTO "GiaoDich" ("SoTien", "SoDu", "ThoiGian" ,"NoiDung", "TongTien", "SoTKNhan", "SoTKRut", "MaLoaiGD", "MaNhanVien", "MaPhieu") VALUES (N_SoTienGui, SODU, CURRENT_TIMESTAMP, 'saving', N_SoTienGui, null, V_SoTK, MaLoaiGD, NULL, MaPhieu);
+  
+END;
+`;
+
 const createProcedure = async (procedure) => {
   try {
     await db.sequelize.query(procedure);
@@ -232,3 +307,4 @@ createProcedure(P_THEM_NGUOIDUNG);
 createProcedure(P_THEM_NGUOIDUNG_SAMPLE);
 createProcedure(P_THEM_TAIKHOAN);
 createProcedure(P_THEM_GIAODICH);
+createProcedure(P_THEM_PHIEUTIETKIEM);

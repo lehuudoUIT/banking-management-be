@@ -11,6 +11,7 @@ import {
   postCreateStatement,
   postCreateReport,
   postChangeRule,
+  postDepositSavingOffline,
 } from "../controllers/employeeController";
 
 import { postCreateTransactionType } from "../controllers/adminController";
@@ -35,11 +36,11 @@ let initAPIRoutes = (app) => {
   router.post("/employee/account/withdraw", postWithdrawAccount);
   router.post("/employee/account/deposit", postDepositAccount);
   router.post("/employee/saving/withdraw", postWithdrawSaving);
-  router.post("/employee/saving/deposit", postDepositSaving);
   router.post("/employee/saving/get-all", getAllSaving);
   router.post("/employee/statement/create", postCreateStatement);
   router.post("/employee/report/create", postCreateReport);
   router.post("/employee/rule/change", postChangeRule);
+  router.post("/employee/saving/deposit", postDepositSavingOffline);
 
   // customer api
   router.post("/customer/account/get-all", getAllAccountById);
