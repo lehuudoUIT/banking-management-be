@@ -39,10 +39,6 @@ const datePrototypeCreate = () => {
 
 datePrototypeCreate();
 
-var myDate = new Date();
-var result1 = myDate.addMonths(1);
-console.log("🚀 ~ result1:", result1);
-
 module.exports = {
   datePrototypeCreate,
 };

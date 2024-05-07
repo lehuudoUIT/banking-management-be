@@ -104,6 +104,28 @@ const depositSaving = async (
   });
 };
 
+const getSavingType = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let savingTypes = await db.LoaiTietKiem.findAll();
+      resolve({
+        errMessage: 0,
+        message: "Get saving types sucessfully!",
+        savingTypes: savingTypes,
+      }).catch((err) => {
+        console.log(err);
+      });
+    } catch (error) {
+      reject({
+        errMessage: 0,
+        message: "Get saving types failed!",
+        err: error,
+      });
+    }
+  });
+};
+
 module.exports = {
   depositSaving,
+  getSavingType,
 };
