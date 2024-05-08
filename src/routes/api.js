@@ -48,6 +48,7 @@ let initAPIRoutes = (app) => {
   router.post("/customer/account/get-all", getAllAccountById);
   router.post("/customer/account/transfer", postTransferAccount);
   router.post("/customer/account/get-all", getAllAccountById);
+  router.post("/customer/saving/deposit", postDepositSavingOnline);
 
   //saving
   router.get("/saving-type/get-all", getAllSavingType);
