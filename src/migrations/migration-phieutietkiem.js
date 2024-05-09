@@ -4,9 +4,8 @@ module.exports = {
     await queryInterface.createTable("PhieuTietKiem", {
       MaPhieu: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
       },
       NgayMo: {
         allowNull: false,
@@ -21,11 +20,11 @@ module.exports = {
         type: Sequelize.FLOAT,
       },
       NgayRut: {
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.DATE,
       },
       SoTienRut: {
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.INTEGER,
       },
       PhuongThuc: {
@@ -41,7 +40,7 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       MaKhachHang: {
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.INTEGER,
       },
       SoTK: {

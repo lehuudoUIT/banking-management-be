@@ -216,6 +216,7 @@ END;
 
 let P_THEM_PHIEUTIETKIEM = `
 CREATE OR REPLACE PROCEDURE P_THEM_PHIEUTIETKIEM(
+  V_MaPhieu IN "PhieuTietKiem"."MaPhieu"%TYPE,
   N_SoTienGui IN "PhieuTietKiem"."SoTienGui"%TYPE,
   V_PhuongThuc IN "PhieuTietKiem"."PhuongThuc"%TYPE,
   N_MaLoaiTietKiem IN "PhieuTietKiem"."MaLoaiTietKiem"%TYPE,
@@ -223,13 +224,12 @@ CREATE OR REPLACE PROCEDURE P_THEM_PHIEUTIETKIEM(
   V_SoTK IN "PhieuTietKiem"."SoTK"%TYPE,
   N_MaNhanVien IN "PhieuTietKiem"."MaNhanVien"%TYPE
 )
-IS 
+IS
 SoDu NUMBER;
 SoDuToiThieu NUMBER;
   TienTietKiemToiThieu NUMBER;
   V_MESSAGE NVARCHAR2(255);
   MaLoaiGD NUMBER;
-  MaPhieu NUMBER;
    LaiSuat "PhieuTietKiem"."LaiSuat"%TYPE;
 BEGIN
 
@@ -276,15 +276,12 @@ END IF;
 SELECT "MaLoaiGD" INTO MaLoaiGD
 FROM "LoaiGiaoDich"
 WHERE "TenLoaiGD" = 'saving';
-
-MaPhieu := "C##BANK1"."ISEQ$$_77255".nextval;
-
-
+  
 -- Lưu phiếu tiết kiệm
-INSERT INTO "PhieuTietKiem" ("MaPhieu", "NgayMo", "SoTienGui", "LaiSuat", "NgayRut", "SoTienRut", "PhuongThuc", "TrangThai", "MaLoaiTietKiem", "MaKhachHang", "SoTK", "MaNhanVien") VALUES (MaPhieu, CURRENT_TIMESTAMP, N_SoTienGui, LaiSuat, NULL, NULL, V_PhuongThuc, 1, N_MaLoaiTietKiem, N_MaKhachHang, V_SoTK, NULL);
+INSERT INTO "PhieuTietKiem" ("MaPhieu", "NgayMo", "SoTienGui", "LaiSuat", "NgayRut", "SoTienRut", "PhuongThuc", "TrangThai", "MaLoaiTietKiem", "MaKhachHang", "SoTK", "MaNhanVien") VALUES (V_MaPhieu, CURRENT_TIMESTAMP, N_SoTienGui, LaiSuat, NULL, NULL, V_PhuongThuc, 1, N_MaLoaiTietKiem, N_MaKhachHang, V_SoTK, NULL);
 
 -- Lưu giao dịch nộp tiền vào bảng giao dịch
-INSERT INTO "GiaoDich" ("SoTien", "SoDu", "ThoiGian" ,"NoiDung", "TongTien", "SoTKNhan", "SoTKRut", "MaLoaiGD", "MaNhanVien", "MaPhieu") VALUES (N_SoTienGui, SODU, CURRENT_TIMESTAMP, 'saving', N_SoTienGui, null, V_SoTK, MaLoaiGD, NULL, MaPhieu);
+INSERT INTO "GiaoDich" ("SoTien", "SoDu", "ThoiGian" ,"NoiDung", "TongTien", "SoTKNhan", "SoTKRut", "MaLoaiGD", "MaNhanVien", "MaPhieu") VALUES (N_SoTienGui, SODU, CURRENT_TIMESTAMP, 'saving', N_SoTienGui, null, V_SoTK, MaLoaiGD, NULL, V_MaPhieu);
   
 END;
 `;

@@ -1,5 +1,6 @@
 import db from "../models/index";
 import { datePrototypeCreate } from "./dateService";
+import { v4 as uuidv4 } from "uuid";
 
 // * Tính tiền lãi
 datePrototypeCreate();
@@ -22,12 +23,16 @@ const depositSaving = async (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
+      let MaPhieu = uuidv4();
+      console.log("🚀 ~ returnnewPromise ~ MaPhieu:", MaPhieu);
+
       let plsql = `
         BEGIN
-        P_THEM_PHIEUTIETKIEM (:sotien, :phuongthuc, :maloaitk, :makh, :stk, :manv);
+        P_THEM_PHIEUTIETKIEM (:maphieu, :sotien, :phuongthuc, :maloaitk, :makh, :stk, :manv);
         END;
         `;
       let replacements = {
+        maphieu: MaPhieu,
         sotien: SoTienGui,
         phuongthuc: PhuongThuc,
         maloaitk: MaLoaiTietKiem,
@@ -52,9 +57,8 @@ const depositSaving = async (
       //! lấy thông tin giao dịch tiết kiệm vừa tạo
       let phieutk = await db.PhieuTietKiem.findOne({
         where: {
-          SoTK: SoTK,
+          MaPhieu: MaPhieu,
         },
-        order: [["NgayMo", "DESC"]],
         raw: true,
       }).catch((err) => {
         console.log("🚀 ~ returnnewPromise ~ err:", err);
