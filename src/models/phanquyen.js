@@ -9,6 +9,14 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      PhanQuyen.belongsTo(models.NhomNguoiDung, {
+        foreignKey: "MaNhom",
+        targetKey: "MaNhom",
+      });
+      PhanQuyen.belongsTo(models.ChucNang, {
+        foreignKey: "MaChucNang",
+        targetKey: "MaChucNang",
+      });
     }
   }
   PhanQuyen.init(
@@ -25,6 +33,12 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "PhanQuyen",
+      freezeTableName: true,
+      timestamps: false,
+      name: {
+        singular: "PhanQuyen",
+        plural: "PhanQuyen",
+      },
     }
   );
   return PhanQuyen;

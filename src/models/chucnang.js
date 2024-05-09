@@ -8,15 +8,14 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
-      ChucNang.belongsToMany(models.NhomNguoiDung, {
-        through: "PhanQuyen",
+      ChucNang.hasMany(models.PhanQuyen, {
+        foreignKey: "MaChucNang",
       });
     }
   }
   ChucNang.init(
     {
-      MaNhom: {
+      MaChucNang: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
@@ -27,6 +26,12 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "ChucNang",
+      freezeTableName: true,
+      timestamps: false,
+      name: {
+        singular: "ChucNang",
+        plural: "ChucNang",
+      },
     }
   );
   return ChucNang;

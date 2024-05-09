@@ -2,6 +2,9 @@ import db from "../models/index";
 require("dotenv").config();
 const nodemailer = require("nodemailer");
 
+import { getGroupWithRoles } from "./JWTservice";
+import { createJWT } from "../middleware/JWTAction";
+
 const checkExistAccount = async (SoTaiKhoan) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -55,11 +58,13 @@ let handleUserLogin = (username, password) => {
   return new Promise(async (resolve, reject) => {
     try {
       let userData = {};
+
       // User already exists
       let user = await db.NguoiDung.findOne({
         where: { username: username },
         raw: true,
       });
+
       if (user) {
         let check;
         if (user.password === password) {
@@ -68,6 +73,7 @@ let handleUserLogin = (username, password) => {
           check = 0;
         }
         if (check) {
+          userData.data = {};
           userData.errCode = 0;
           userData.errMessage = "Login success";
           userData.user = user;
@@ -80,6 +86,19 @@ let handleUserLogin = (username, password) => {
         userData.errCode = 1;
         userData.errMessage = `Your username isn's exists in our system. Please try again!`;
       }
+      // ? let token =
+      //! create token
+      let groupWithRoles = await getGroupWithRoles(user);
+      let payload = {
+        email: user.Email,
+        groupWithRoles,
+        expiresIn: process.env.JWT_EXPIRESIN_IN,
+      };
+
+      let token = createJWT(payload);
+
+      userData.data.roles = groupWithRoles;
+      userData.data.access_token = token;
 
       resolve(userData);
     } catch (e) {

@@ -15,7 +15,6 @@ const postCheckExistAccount = async (req, res) => {
   //Create transaction with STK nguoi nhan la null
 
   let response = await checkExistAccount(SoTaiKhoan);
-
   return res.status(200).json(response);
 };
 
@@ -28,6 +27,14 @@ let handleLogin = async (req, res) => {
     });
   }
   let response = await handleUserLogin(username, password);
+
+  //res.cookie = ("test cookies", { samesite: "None", httpOnly: true });
+
+  res.cookie("jwt", response.data.access_token, {
+    httpOnly: true,
+    maxAge: process.env.JWT_EXPIRES_IN,
+  });
+  console.log(response);
   return res.status(200).json(response);
 };
 
