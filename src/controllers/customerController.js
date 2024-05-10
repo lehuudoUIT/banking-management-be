@@ -3,7 +3,7 @@ import {
   createTransaction,
 } from "../services/customerServices";
 
-import { depositSaving } from "../services/savingService";
+import { depositSaving, withdrawSaving } from "../services/savingService";
 
 const getAllAccountById = async (req, res) => {
   const MaKhachHang = req.body.MaKhachHang;
@@ -59,7 +59,17 @@ const postDepositSavingOnline = async (req, res) => {
   return res.status(200).json(response);
 };
 
-const postWithdrawSavingOnline = (req, res) => {};
+const postWithdrawSavingOnline = async (req, res) => {
+  const { MaPhieu } = req.body;
+  if (!MaPhieu) {
+    return res.status(500).json({
+      message: "Missing input parameters",
+      errCode: 1,
+    });
+  }
+  let response = await withdrawSaving(MaPhieu, null);
+  return res.status(200).json(response);
+};
 
 module.exports = {
   getAllAccountById,
