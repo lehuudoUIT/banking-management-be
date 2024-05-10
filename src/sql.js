@@ -222,7 +222,7 @@ CREATE OR REPLACE PROCEDURE P_THEM_PHIEUTIETKIEM(
   N_MaLoaiTietKiem IN "PhieuTietKiem"."MaLoaiTietKiem"%TYPE,
   N_MaKhachHang IN "PhieuTietKiem"."MaKhachHang"%TYPE,
   V_SoTK IN "PhieuTietKiem"."SoTK"%TYPE,
-  N_MaNhanVien IN "PhieuTietKiem"."MaNhanVien"%TYPE
+  N_MaNhanVien IN "GiaoDich"."MaNhanVien"%TYPE
 )
 IS
 SoDu NUMBER;
@@ -276,12 +276,146 @@ END IF;
 SELECT "MaLoaiGD" INTO MaLoaiGD
 FROM "LoaiGiaoDich"
 WHERE "TenLoaiGD" = 'saving';
-  
+
 -- Lưu phiếu tiết kiệm
-INSERT INTO "PhieuTietKiem" ("MaPhieu", "NgayMo", "SoTienGui", "LaiSuat", "NgayRut", "SoTienRut", "PhuongThuc", "TrangThai", "MaLoaiTietKiem", "MaKhachHang", "SoTK", "MaNhanVien") VALUES (V_MaPhieu, CURRENT_TIMESTAMP, N_SoTienGui, LaiSuat, NULL, NULL, V_PhuongThuc, 1, N_MaLoaiTietKiem, N_MaKhachHang, V_SoTK, NULL);
+INSERT INTO "PhieuTietKiem" ("MaPhieu", "NgayMo", "SoTienGui", "LaiSuat", "NgayRut", "SoTienRut", "PhuongThuc", "TrangThai", "MaLoaiTietKiem", "MaKhachHang", "SoTK") VALUES (V_MaPhieu, CURRENT_TIMESTAMP, N_SoTienGui, LaiSuat, NULL, NULL, V_PhuongThuc, 1, N_MaLoaiTietKiem, N_MaKhachHang, V_SoTK);
 
 -- Lưu giao dịch nộp tiền vào bảng giao dịch
-INSERT INTO "GiaoDich" ("SoTien", "SoDu", "ThoiGian" ,"NoiDung", "TongTien", "SoTKNhan", "SoTKRut", "MaLoaiGD", "MaNhanVien", "MaPhieu") VALUES (N_SoTienGui, SODU, CURRENT_TIMESTAMP, 'saving', N_SoTienGui, null, V_SoTK, MaLoaiGD, NULL, V_MaPhieu);
+INSERT INTO "GiaoDich" ("SoTien", "SoDu", "ThoiGian" ,"NoiDung", "TongTien", "SoTKNhan", "SoTKRut", "MaLoaiGD", "MaNhanVien", "MaPhieu") VALUES (N_SoTienGui, SODU, CURRENT_TIMESTAMP, 'saving', N_SoTienGui, null, V_SoTK, MaLoaiGD, N_MaNhanVien, V_MaPhieu);
+  
+END;
+`;
+
+let P_TATTOAN_PHIEUTIETKIEM = `
+CREATE OR REPLACE PROCEDURE P_TATTOAN_PHIEUTIETKIEM(
+  V_MaPhieu IN "PhieuTietKiem"."MaPhieu"%TYPE,
+  N_MaNhanVien IN "GiaoDich"."MaNhanVien"%TYPE
+)
+IS
+SoDu NUMBER;
+  ThoiGianGuiTietKiemToiThieu NUMBER;
+  V_MESSAGE NVARCHAR2(255);
+NgayGui TIMESTAMP WITH LOCAL TIME ZONE;
+NgayChenhLech NUMBER;
+NgayMo TIMESTAMP WITH LOCAL TIME ZONE;
+KyHan NUMBER;
+MaLoaiTietKiem "PhieuTietKiem"."MaLoaiTietKiem"%TYPE;
+NgayDenHan TIMESTAMP WITH LOCAL TIME ZONE;
+LaiSuat NUMBER;
+TienGui "PhieuTietKiem"."SoTienGui"%TYPE;
+TienRut "PhieuTietKiem"."SoTienRut"%TYPE;
+SoTaiKhoan "TaiKhoan"."SoTaiKhoan"%TYPE;
+MaLoaiGD "LoaiGiaoDich"."MaLoaiGD"%TYPE;
+TrangThaiPhieu "PhieuTietKiem"."TrangThai"%TYPE;
+BEGIN
+
+-- Kiểm tra phiếu còn hiệu lực không
+SELECT "TrangThai" INTO TrangThaiPhieu
+FROM "PhieuTietKiem"
+WHERE "MaPhieu" = V_MaPhieu; 
+
+IF TrangThaiPhieu = '0' THEN
+  V_MESSAGE := 'Phiếu đã tất toán ' || ThoiGianGuiTietKiemToiThieu;
+  RAISE_APPLICATION_ERROR(-20001, V_MESSAGE);
+END IF;
+
+-- Load thời gian tiết kiệm tối thiểu
+
+SELECT "GiaTri" INTO ThoiGianGuiTietKiemToiThieu
+FROM "ThamSo"
+WHERE "Ten" = 'ThoiGianGuiTietKiemToiThieu';
+
+-- Tính số ngày chênh lệch 
+SELECT "NgayMo" INTO NgayMo 
+FROM "PhieuTietKiem" 
+WHERE "MaPhieu" = V_MaPhieu;
+
+NgayChenhLech := EXTRACT(DAY FROM CURRENT_TIMESTAMP - NgayMo);
+
+-- Kiểm tra ngày gửi tối thiểu tối thiểu
+IF NgayChenhLech < ThoiGianGuiTietKiemToiThieu THEN
+  V_MESSAGE := 'Ngay gui tiet kiem phai lon hon ' || ThoiGianGuiTietKiemToiThieu;
+  RAISE_APPLICATION_ERROR(-20002, V_MESSAGE);
+END IF;
+
+-- Kiểm tra ngày rút có bằng ngày đến hạn
+SELECT "MaLoaiTietKiem" INTO MaLoaiTietKiem
+FROM "PhieuTietKiem"
+WHERE "MaPhieu" = V_MaPhieu;
+
+SELECT "KyHan" INTO KyHan
+FROM "LoaiTietKiem"
+WHERE "MaLoaiTietKiem" = MaLoaiTietKiem;
+
+NgayDenHan := ADD_MONTHS(NgayMo, KyHan) - 1;
+
+IF CURRENT_TIMESTAMP > NgayDenHan THEN
+  SELECT "LaiSuat" INTO LaiSuat
+  FROM "PhieuTietKiem"
+  WHERE "MaPhieu" = V_MaPhieu;
+ELSE
+  SELECT "LaiSuat" INTO LaiSuat
+  FROM "LoaiTietKiem"
+  WHERE "KyHan" = 0;
+
+  -- Update lại thông tin phiếu tiết kiệm
+  UPDATE "PhieuTietKiem"
+  SET "LaiSuat" = LaiSuat
+  WHERE "MaPhieu" = V_MaPhieu;
+
+  UPDATE "PhieuTietKiem"
+  SET "MaLoaiTietKiem" = 0
+  WHERE "MaPhieu" = V_MaPhieu;
+  
+END IF;
+
+SELECT "SoTienGui" INTO TienGui
+FROM "PhieuTietKiem"
+WHERE "MaPhieu" = V_MaPhieu;
+
+--  Update ngày rút
+
+UPDATE "PhieuTietKiem"
+SET "NgayRut" = CURRENT_TIMESTAMP
+WHERE "MaPhieu" = V_MaPhieu;
+-- Tính tiền rút = tiền gốc cộng lãi
+TienRut := TINHLAI(TienGui, NgayChenhLech, LaiSuat);
+-- Update tiền rút 
+UPDATE "PhieuTietKiem" 
+SET "SoTienRut" = TienRut
+WHERE "MaPhieu" = V_MaPhieu;
+
+SELECT "SoTK" INTO SoTaiKhoan
+FROM "PhieuTietKiem"
+WHERE "MaPhieu" = V_MaPhieu;
+
+IF SoTaiKhoan IS NOT NULL THEN
+
+  -- Cộng tiền tài khoản gửi tiết kiệm
+  SELECT "SoDu" INTO SoDu
+  FROM "TaiKhoan"
+  WHERE "SoTaiKhoan" = SoTaiKhoan;
+
+  SoDu := SoDu + 	TienRut;
+
+  -- Cộng tiền tài khoản gửi
+  UPDATE "TaiKhoan"
+  SET "SoDu" = SoDu
+  WHERE "SoTaiKhoan" = SoTaiKhoan;
+END IF;
+
+-- Lấy mã gd tiết kiệm
+SELECT "MaLoaiGD" INTO MaLoaiGD
+FROM "LoaiGiaoDich"
+WHERE "TenLoaiGD" = 'settlement';
+
+-- Chuyển trạng thái phiếu về không hoạt động:
+UPDATE "PhieuTietKiem" 
+SET "TrangThai"  = 0
+WHERE "MaPhieu" = V_MaPhieu;
+
+-- Lưu giao dịch nộp tiền vào bảng giao dịch
+INSERT INTO "GiaoDich" ("SoTien", "SoDu", "ThoiGian" ,"NoiDung", "TongTien", "SoTKNhan", "SoTKRut", "MaLoaiGD", "MaNhanVien", "MaPhieu") VALUES (TienRut, SoDu, CURRENT_TIMESTAMP, 'settlement', TienRut, SoTaiKhoan, null, MaLoaiGD, N_MaNhanVien, V_MaPhieu);
   
 END;
 `;
@@ -305,3 +439,4 @@ createProcedure(P_THEM_NGUOIDUNG_SAMPLE);
 createProcedure(P_THEM_TAIKHOAN);
 createProcedure(P_THEM_GIAODICH);
 createProcedure(P_THEM_PHIEUTIETKIEM);
+createProcedure(P_TATTOAN_PHIEUTIETKIEM);

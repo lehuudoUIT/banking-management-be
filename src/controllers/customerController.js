@@ -59,8 +59,11 @@ const postDepositSavingOnline = async (req, res) => {
   return res.status(200).json(response);
 };
 
+const postWithdrawSavingOnline = (req, res) => {};
+
 module.exports = {
   getAllAccountById,
   postTransferAccount,
   postDepositSavingOnline,
+  postWithdrawSavingOnline,
 };

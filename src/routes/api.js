@@ -5,7 +5,7 @@ import {
   postCreateUserAccount,
   postWithdrawAccount,
   postDepositAccount,
-  postWithdrawSaving,
+  postWithdrawSavingOffline,
   postDepositSaving,
   getAllSaving,
   postCreateStatement,
@@ -25,6 +25,7 @@ import {
   getAllAccountById,
   postTransferAccount,
   postDepositSavingOnline,
+  postWithdrawSavingOnline,
 } from "../controllers/customerController";
 
 import { getAllSavingType } from "../controllers/savingController";
@@ -37,18 +38,19 @@ let initAPIRoutes = (app) => {
   router.post("/employee/account/create", postCreateUserAccount);
   router.post("/employee/account/withdraw", postWithdrawAccount);
   router.post("/employee/account/deposit", postDepositAccount);
-  router.post("/employee/saving/withdraw", postWithdrawSaving);
+  router.post("/employee/saving/withdraw", postWithdrawSavingOffline);
+  router.post("/employee/saving/deposit", postDepositSavingOffline);
   router.post("/employee/saving/get-all", getAllSaving);
   router.post("/employee/statement/create", postCreateStatement);
   router.post("/employee/report/create", postCreateReport);
   router.post("/employee/rule/change", postChangeRule);
-  router.post("/employee/saving/deposit", postDepositSavingOffline);
 
   // customer api
   router.post("/customer/account/get-all", getAllAccountById);
   router.post("/customer/account/transfer", postTransferAccount);
   router.post("/customer/account/get-all", getAllAccountById);
   router.post("/customer/saving/deposit", postDepositSavingOnline);
+  router.post("/customer/saving/withdraw", postWithdrawSavingOnline);
 
   //saving
   router.get("/saving-type/get-all", getAllSavingType);

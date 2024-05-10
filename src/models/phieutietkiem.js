@@ -14,9 +14,8 @@ module.exports = (sequelize, DataTypes) => {
   PhieuTietKiem.init(
     {
       MaPhieu: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         primaryKey: true,
-        autoIncrement: true,
       },
       NgayMo: DataTypes.DATE,
       SoTienGui: DataTypes.INTEGER,
@@ -28,7 +27,6 @@ module.exports = (sequelize, DataTypes) => {
       MaLoaiTietKiem: DataTypes.INTEGER,
       MaKhachHang: DataTypes.INTEGER,
       SoTK: DataTypes.STRING,
-      MaNhanVien: DataTypes.INTEGER,
     },
     {
       sequelize,

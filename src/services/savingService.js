@@ -9,6 +9,7 @@ const tinhTienLai = (SoTienGui, SoNgayGui, LaiSuat) => {
   let tienLai = SoTienGui;
   for (let i = 0; i < SoNgayGui; i++) {
     tienLai += (SoTienGui * LaiSuat) / 365;
+    tienLai = Math.round(tienLai);
   }
   return Math.round(tienLai);
 };
@@ -108,6 +109,57 @@ const depositSaving = async (
   });
 };
 
+const withdrawSaving = (MaPhieu, MaNhanVien) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let plsql = `
+      BEGIN
+      P_TATTOAN_PHIEUTIETKIEM (:maphieu, :manv);
+      END;
+      `;
+      let replacements = {
+        maphieu: MaPhieu,
+        manv: MaNhanVien,
+      };
+
+      //! Tạo giao dịch rút tiết kiệm
+      await db.sequelize
+        .query(plsql, {
+          replacements: replacements,
+        })
+        .catch((err) => {
+          resolve({
+            errMessage: 0,
+            message: "Withdraw saving failed!",
+            err: err,
+          });
+        });
+
+      //! lấy thông tin giao dịch tiết kiệm vừa tạo
+      let phieutk = await db.PhieuTietKiem.findOne({
+        where: {
+          MaPhieu: MaPhieu,
+        },
+        raw: true,
+      }).catch((err) => {
+        console.log("🚀 ~ returnnewPromise ~ err:", err);
+        return {};
+      });
+      resolve({
+        errMessage: 0,
+        message: "Withdraw saving sucessfully!",
+        PhieuTietKiem: phieutk,
+      });
+    } catch (error) {
+      reject({
+        errMessage: 0,
+        message: "Withdraw saving failed!",
+        err: error,
+      });
+    }
+  });
+};
+
 const getSavingType = () => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -132,4 +184,5 @@ const getSavingType = () => {
 module.exports = {
   depositSaving,
   getSavingType,
+  withdrawSaving,
 };
