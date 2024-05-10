@@ -71,6 +71,7 @@ const createTransaction = async (
             SoTKRut: SoTKRut,
           },
           order: [["ThoiGian", "DESC"]],
+          include: { model: db.LoaiGD },
         })
           .then((item) => {
             response = {
