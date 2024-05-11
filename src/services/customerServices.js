@@ -99,7 +99,47 @@ const createTransaction = async (
   });
 };
 
+const getSavingByAccountId = async (SoTaiKhoan, TrangThai) => {
+  return new Promise((resolve, reject) => {
+    try {
+      let condition = {
+        SoTK: SoTaiKhoan,
+        TrangThai: TrangThai,
+      };
+      Object.keys(condition).forEach((key) => {
+        if (!condition[key]) delete condition[key];
+      });
+      let savings = db.PhieuTietKiem.findAll({
+        where: condition,
+        raw: true,
+      })
+        .then((item) => {
+          console.log(item);
+          resolve({
+            errMessage: 0,
+            message: "Get savings sucessfully!",
+            transaction: item,
+          });
+        })
+        .catch((err) => {
+          resolve({
+            errMessage: 1,
+            message: "Get savings failed!",
+            error: err,
+          });
+        });
+    } catch (error) {
+      resolve({
+        errMessage: 2,
+        message: "Get savings failed!",
+        error: error,
+      });
+    }
+  });
+};
+
 module.exports = {
   getAccountById,
   createTransaction,
+  getSavingByAccountId,
 };
