@@ -97,24 +97,41 @@ const createAccount = async (MaKhachHang, LoaiTaiKhoan) => {
         attributes: ["CCCD"],
       });
 
-      await db.sequelize.query(plsql, {
-        replacements: {
-          stk: prefix + user.CCCD,
-          makh: MaKhachHang,
-          loaitk: LoaiTaiKhoan,
-          sodu: "50000",
-          trangthai: "1",
-        },
-      });
+      let newStk = prefix + user.CCCD;
 
-      resolve({
-        errMessage: 0,
-        message: "Create account successfully!",
-      });
+      await db.sequelize
+        .query(plsql, {
+          replacements: {
+            stk: newStk,
+            makh: MaKhachHang,
+            loaitk: LoaiTaiKhoan,
+            sodu: "50000",
+            trangthai: "1",
+          },
+        })
+        .then(async () => {
+          let account = await db.TaiKhoan.findOne({
+            where: {
+              SoTaiKhoan: newStk,
+            },
+            raw: true,
+          });
+          resolve({
+            errMessage: 0,
+            message: "Create account successfully!",
+            account: account,
+          });
+        })
+        .catch((err) => {
+          reject({
+            errMessage: 3,
+            message: "Create account unsuccessfully!",
+          });
+        });
     } catch (error) {
       reject({
         errCode: 2,
-        message: "Create account failed!",
+        message: "Create account unsuccessfully!",
         errMess: error,
       });
     }
