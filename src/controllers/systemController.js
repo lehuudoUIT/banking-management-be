@@ -52,14 +52,14 @@ const handleSendOtp = async (req, res) => {
 };
 
 const postCheckExistCccd = async (req, res) => {
-  const { cccd } = req.body;
-  if (!cccd) {
+  const { CCCD } = req.body;
+  if (!CCCD) {
     return res.status(500).json({
       errCode: 1,
       message: "Missing input parameter !",
     });
   }
-  let response = await checkExistCccd(cccd);
+  let response = await checkExistCccd(CCCD);
   return res.status(200).json(response);
 };
 

@@ -170,22 +170,15 @@ const checkExistCccd = async (cccd) => {
           message: "User does not exist!",
         });
       } else {
+        NguoiDung.password = undefined;
         let accounts = await db.TaiKhoan.findAll({
           where: {
             MaKhachHang: NguoiDung.MaNguoiDung,
           },
           raw: true,
-        })
-          .then((result) => {
-            let accounts = [];
-            result.forEach((element) => {
-              accounts.push(element.SoTaiKhoan);
-            });
-            return accounts;
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+        }).catch((err) => {
+          console.log(err);
+        });
         if (accounts.length < 1) {
           resolve({
             errMessage: 2,
