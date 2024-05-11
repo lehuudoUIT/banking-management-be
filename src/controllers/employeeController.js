@@ -8,6 +8,8 @@ import { createTransaction } from "../services/customerServices";
 
 import { depositSaving, withdrawSaving } from "../services/savingService";
 
+import { createStatement } from "../services/accountService";
+
 const postCreateUserCIF = async (req, res) => {
   let {
     NgheNghiep,
@@ -151,7 +153,17 @@ const postDepositSavingOffline = async (req, res) => {
   return res.status(200).json(response);
 };
 const getAllSaving = async (req, res) => {};
-const postCreateStatement = async (req, res) => {};
+const postCreateStatement = async (req, res) => {
+  const { SoTaiKhoan, StartDate, EndDate } = req.body;
+  if (!SoTaiKhoan || !StartDate || !EndDate) {
+    return res.status(500).json({
+      message: "Missing input parameters",
+      errCode: 1,
+    });
+  }
+  let response = await createStatement(SoTaiKhoan, StartDate, EndDate);
+  return res.status(200).json(response);
+};
 const postCreateReport = async (req, res) => {};
 const postChangeRule = async (req, res) => {};
 
