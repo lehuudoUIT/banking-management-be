@@ -19,6 +19,7 @@ import {
   postCheckExistAccount,
   handleLogin,
   handleSendOtp,
+  postCheckExistCccd,
 } from "../controllers/systemController";
 
 import {
@@ -62,6 +63,7 @@ let initAPIRoutes = (app) => {
 
   //system
   router.post("/system/account/check-exist", postCheckExistAccount);
+  router.post("/system/account/cccd-exist", postCheckExistCccd);
   router.post("/login", handleLogin);
   router.post("/system/otp/send", handleSendOtp);
 

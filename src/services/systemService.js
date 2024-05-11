@@ -152,8 +152,68 @@ const sendOTP = async (otp, email) => {
   });
 };
 
+const checkExistCccd = async (cccd) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let NguoiDung = await db.NguoiDung.findOne({
+        where: {
+          CCCD: cccd,
+        },
+        raw: true,
+      }).catch((err) => {
+        console.log("🚀 ~ returnnewPromise ~ err:", err);
+        return {};
+      });
+      if (!NguoiDung) {
+        resolve({
+          errMessage: 1,
+          message: "User does not exist!",
+        });
+      } else {
+        let accounts = await db.TaiKhoan.findAll({
+          where: {
+            MaKhachHang: NguoiDung.MaNguoiDung,
+          },
+          raw: true,
+        })
+          .then((result) => {
+            let accounts = [];
+            result.forEach((element) => {
+              accounts.push(element.SoTaiKhoan);
+            });
+            return accounts;
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+        if (accounts.length < 1) {
+          resolve({
+            errMessage: 2,
+            message: "User do not have any account!",
+            NguoiDung: NguoiDung,
+          });
+        } else {
+          resolve({
+            errMessage: 3,
+            message: "Get accounts successfully!",
+            NguoiDung: NguoiDung,
+            DanhSachTaiKhoan: accounts,
+          });
+        }
+      }
+    } catch (error) {
+      resolve({
+        errMessage: 2,
+        message: "Get accounts failed!",
+        error: error,
+      });
+    }
+  });
+};
+
 module.exports = {
   checkExistAccount,
   handleUserLogin,
   sendOTP,
+  checkExistCccd,
 };
