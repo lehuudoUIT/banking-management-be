@@ -28,6 +28,7 @@ import {
   postDepositSavingOnline,
   postWithdrawSavingOnline,
   getAllSavingById,
+  getAllTransaction,
 } from "../controllers/customerController";
 
 import { getAllSavingType } from "../controllers/savingController";
@@ -54,6 +55,7 @@ let initAPIRoutes = (app) => {
   router.post("/customer/saving/deposit", postDepositSavingOnline);
   router.post("/customer/saving/withdraw", postWithdrawSavingOnline);
   router.post("/customer/saving/get-all", getAllSavingById);
+  router.post("/customer/transaction/get-all", getAllTransaction);
 
   //saving
   router.get("/saving-type/get-all", getAllSavingType);

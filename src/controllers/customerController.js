@@ -2,6 +2,7 @@ import {
   getAccountById,
   createTransaction,
   getSavingByAccountId,
+  getListTransactionByAccountId,
 } from "../services/customerServices";
 
 import { depositSaving, withdrawSaving } from "../services/savingService";
@@ -87,10 +88,24 @@ const getAllSavingById = async (req, res) => {
   return res.status(200).json(response);
 };
 
+const getAllTransaction = async (req, res) => {
+  let { SoTaiKhoan, Ngay } = req.body;
+  if (!Ngay) Ngay = 30;
+  if (!SoTaiKhoan) {
+    return res.status(500).json({
+      message: "Missing input parameters",
+      errCode: 1,
+    });
+  }
+  let response = await getListTransactionByAccountId(SoTaiKhoan, Ngay);
+  return res.status(200).json(response);
+};
+
 module.exports = {
   getAllAccountById,
   postTransferAccount,
   postDepositSavingOnline,
   postWithdrawSavingOnline,
   getAllSavingById,
+  getAllTransaction,
 };

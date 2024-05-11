@@ -1,5 +1,9 @@
 let db = require("./models/index");
 
+let set_date_time = `
+ALTER SESSION SET nls_date_format='dd-mm-yyyy';
+`;
+
 let P_THEM_NGUOIDUNG = `
 CREATE OR REPLACE PROCEDURE P_THEM_NGUOIDUNG(
     V_NgheNghiep IN "NguoiDung"."NgheNghiep"%TYPE,
@@ -455,7 +459,7 @@ const createProcedure = async (procedure) => {
 };
 
 console.log("Starting create procedure...");
-
+createProcedure(set_date_time);
 createProcedure(P_THEM_NGUOIDUNG);
 createProcedure(P_THEM_NGUOIDUNG_SAMPLE);
 createProcedure(P_THEM_TAIKHOAN);

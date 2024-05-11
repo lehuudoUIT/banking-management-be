@@ -1,4 +1,6 @@
+import { Op } from "sequelize";
 import db from "../models/index";
+import moment from "moment";
 
 const getAccountById = async (MaKhachHang) => {
   return new Promise(async (resolve, reject) => {
@@ -138,8 +140,46 @@ const getSavingByAccountId = async (SoTaiKhoan, TrangThai) => {
   });
 };
 
+const getListTransactionByAccountId = (SoTaiKhoan, Ngay) => {
+  return new Promise((resolve, reject) => {
+    try {
+      let transactions = db.GiaoDich.findAll({
+        where: {
+          ThoiGian: {
+            [Op.gte]: moment().subtract(Ngay, "days").toDate(),
+          },
+          [Op.or]: [{ SoTKNhan: SoTaiKhoan }, { SoTKRut: SoTaiKhoan }],
+        },
+        raw: true,
+      })
+        .then((item) => {
+          console.log(item);
+          resolve({
+            errMessage: 0,
+            message: "Get transactions sucessfully!",
+            transactions: item,
+          });
+        })
+        .catch((err) => {
+          resolve({
+            errMessage: 1,
+            message: "Get transactions failed!",
+            error: err,
+          });
+        });
+    } catch (error) {
+      resolve({
+        errMessage: 2,
+        message: "Get transactions failed!",
+        error: error,
+      });
+    }
+  });
+};
+
 module.exports = {
   getAccountById,
   createTransaction,
   getSavingByAccountId,
+  getListTransactionByAccountId,
 };
