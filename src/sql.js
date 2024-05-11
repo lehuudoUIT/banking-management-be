@@ -420,6 +420,28 @@ INSERT INTO "GiaoDich" ("SoTien", "SoDu", "ThoiGian" ,"NoiDung", "TongTien", "So
 END;
 `;
 
+let function_TinhLai = `
+CREATE OR REPLACE FUNCTION TinhLai (
+	SoTienGui IN "PhieuTietKiem"."SoTienGui"%TYPE , 
+	SoNgayGui IN NUMBER , 
+	LaiSuat IN NUMBER 
+) 
+RETURN NUMBER
+IS
+	TienLai "PhieuTietKiem"."SoTienGui"%TYPE := SoTienGui;
+	I NUMBER;
+	RoundedLaiSuat NUMBER;
+BEGIN 
+	DBMS_OUTPUT.PUT_LINE(LaiSuat);
+	RoundedLaiSuat := ROUND(LaiSuat, 3);
+	DBMS_OUTPUT.PUT_LINE(RoundedLaiSuat);
+	FOR I IN 1..SoNgayGui LOOP
+		TienLai := TienLai + (SoTienGui * LaiSuat)/365;
+	END LOOP;
+	RETURN Round(TienLai);
+END;
+`;
+
 const createProcedure = async (procedure) => {
   try {
     await db.sequelize.query(procedure);
@@ -440,3 +462,4 @@ createProcedure(P_THEM_TAIKHOAN);
 createProcedure(P_THEM_GIAODICH);
 createProcedure(P_THEM_PHIEUTIETKIEM);
 createProcedure(P_TATTOAN_PHIEUTIETKIEM);
+createProcedure(function_TinhLai);
