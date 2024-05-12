@@ -128,8 +128,14 @@ const postWithdrawSavingOffline = async (req, res) => {
 };
 
 const postDepositSavingOffline = async (req, res) => {
-  const { SoTienGui, PhuongThuc, MaLoaiTietKiem, MaKhachHang, MaNhanVien } =
-    req.body;
+  const {
+    SoTaiKhoan,
+    SoTienGui,
+    PhuongThuc,
+    MaLoaiTietKiem,
+    MaKhachHang,
+    MaNhanVien,
+  } = req.body;
   if (
     !SoTienGui ||
     !PhuongThuc ||
@@ -147,7 +153,7 @@ const postDepositSavingOffline = async (req, res) => {
     PhuongThuc,
     MaLoaiTietKiem,
     MaKhachHang,
-    null,
+    SoTaiKhoan,
     MaNhanVien
   );
   return res.status(200).json(response);
