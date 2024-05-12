@@ -89,15 +89,19 @@ const getAllSavingById = async (req, res) => {
 };
 
 const getAllTransaction = async (req, res) => {
-  let { SoTaiKhoan, Ngay } = req.body;
-  if (!Ngay) Ngay = 30;
+  let { SoTaiKhoan, recent, startDate, endDate } = req.body;
   if (!SoTaiKhoan) {
     return res.status(500).json({
       message: "Missing input parameters",
       errCode: 1,
     });
   }
-  let response = await getListTransactionByAccountId(SoTaiKhoan, Ngay);
+  let response = await getListTransactionByAccountId(
+    SoTaiKhoan,
+    recent,
+    startDate,
+    endDate
+  );
   return res.status(200).json(response);
 };
 

@@ -168,20 +168,41 @@ const getSavingByAccountId = async (SoTaiKhoan, TrangThai) => {
   });
 };
 
-const getListTransactionByAccountId = (SoTaiKhoan, Ngay) => {
+const getListTransactionByAccountId = (
+  SoTaiKhoan,
+  recent,
+  startDate,
+  endDate
+) => {
   return new Promise((resolve, reject) => {
     try {
+      let ThoiGian = {};
+      if (recent) {
+        console.log(recent);
+        if (recent > 30) recent = 30;
+        ThoiGian = {
+          [Op.gte]: moment().subtract(recent, "days").toDate(),
+        };
+      } else {
+        startDate = new Date(startDate);
+        endDate = new Date(endDate).setHours(23, 59, 59);
+
+        console.log(startDate);
+        console.log(endDate);
+
+        ThoiGian = {
+          [Op.between]: [startDate, endDate],
+        };
+      }
       let transactions = db.GiaoDich.findAll({
         where: {
-          ThoiGian: {
-            [Op.gte]: moment().subtract(Ngay, "days").toDate(),
-          },
+          ThoiGian: ThoiGian,
           [Op.or]: [{ SoTKNhan: SoTaiKhoan }, { SoTKRut: SoTaiKhoan }],
         },
         raw: true,
       })
         .then((item) => {
-          console.log(item);
+          console.log("Length records: " + item.length);
           resolve({
             errMessage: 0,
             message: "Get transactions sucessfully!",
@@ -196,7 +217,7 @@ const getListTransactionByAccountId = (SoTaiKhoan, Ngay) => {
           });
         });
     } catch (error) {
-      resolve({
+      reject({
         errMessage: 2,
         message: "Get transactions failed!",
         error: error,
