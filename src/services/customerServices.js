@@ -123,21 +123,23 @@ const getSavingByAccountId = async (SoTaiKhoan, TrangThai) => {
           let transactions = [];
 
           result.forEach((item) => {
-            let tientamtinh = tinhTienLai(
-              item.SoTienGui,
-              item.LoaiTietKiem.KyHan * 30,
-              Math.round(item.LoaiTietKiem.LaiSuat * 1000) / 1000
-            );
+            if (item.TrangThai == 1) {
+              let tientamtinh = tinhTienLai(
+                item.SoTienGui,
+                item.LoaiTietKiem.KyHan * 30,
+                Math.round(item.LoaiTietKiem.LaiSuat * 1000) / 1000
+              );
 
-            let ngaytamrut = new Date();
-            ngaytamrut.addMonths(item.LoaiTietKiem.KyHan);
+              let ngaytamrut = new Date();
+              ngaytamrut.addMonths(item.LoaiTietKiem.KyHan);
 
-            let tamtinh = {
-              TienTamTinh: tientamtinh,
-              NgayTamRut: ngaytamrut,
-            };
+              let tamtinh = {
+                TienTamTinh: tientamtinh,
+                NgayTamRut: ngaytamrut,
+              };
 
-            item.TamTinh = tamtinh;
+              item.TamTinh = tamtinh;
+            }
             transactions.push(item);
           });
 
