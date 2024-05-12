@@ -1,9 +1,8 @@
-import db from "../models/index";
-import { datePrototypeCreate } from "./dateService";
+import { Op } from "sequelize";
+import db, { Sequelize } from "../models/index";
 import { v4 as uuidv4 } from "uuid";
 
 // * Tính tiền lãi
-datePrototypeCreate();
 
 const tinhTienLai = (SoTienGui, SoNgayGui, LaiSuat) => {
   let tienLai = SoTienGui;
@@ -86,8 +85,8 @@ const depositSaving = async (
         loaitietkiem.LaiSuat
       );
 
-      let ngaytamrut = phieutk.NgayMo;
-      ngaytamrut.addMonths(loaitietkiem.KyHan);
+      let ngaytamrut = new Date();
+      ngaytamrut.setMonth(ngaytamrut.getMonth() + loaitietkiem.KyHan);
 
       let tamtinh = {
         TienTamTinh: tientamtinh,
