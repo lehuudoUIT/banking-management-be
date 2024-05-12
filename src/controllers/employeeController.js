@@ -6,7 +6,11 @@ import {
 
 import { createTransaction } from "../services/customerServices";
 
-import { depositSaving, withdrawSaving } from "../services/savingService";
+import {
+  depositSaving,
+  withdrawSaving,
+  createSavingReport,
+} from "../services/savingService";
 
 import { createStatement } from "../services/accountService";
 
@@ -170,7 +174,17 @@ const postCreateStatement = async (req, res) => {
   let response = await createStatement(SoTaiKhoan, StartDate, EndDate);
   return res.status(200).json(response);
 };
-const postCreateReport = async (req, res) => {};
+const postCreateSavingReport = async (req, res) => {
+  const { Ngay, isCreateReport } = req.body;
+  if (!Ngay || !isCreateReport) {
+    return res.status(500).json({
+      message: "Missing input parameters",
+      errCode: 1,
+    });
+  }
+  let response = await createSavingReport(Ngay, isCreateReport);
+  return res.status(200).json(response);
+};
 const postChangeRule = async (req, res) => {};
 
 module.exports = {
@@ -181,7 +195,7 @@ module.exports = {
   postWithdrawSavingOffline,
   getAllSaving,
   postCreateStatement,
-  postCreateReport,
+  postCreateSavingReport,
   postChangeRule,
   postDepositSavingOffline,
 };

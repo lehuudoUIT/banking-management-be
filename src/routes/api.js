@@ -9,7 +9,7 @@ import {
   postDepositSaving,
   getAllSaving,
   postCreateStatement,
-  postCreateReport,
+  postCreateSavingReport,
   postChangeRule,
   postDepositSavingOffline,
 } from "../controllers/employeeController";
@@ -45,7 +45,7 @@ let initAPIRoutes = (app) => {
   router.post("/employee/saving/deposit", postDepositSavingOffline);
   router.post("/employee/saving/get-all", getAllSaving);
   router.post("/employee/statement/create", postCreateStatement);
-  router.post("/employee/report/create", postCreateReport);
+  router.post("/employee/saving/create-report", postCreateSavingReport);
   router.post("/employee/rule/change", postChangeRule);
 
   // customer api
