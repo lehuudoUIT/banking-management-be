@@ -199,6 +199,21 @@ const getListTransactionByAccountId = (
           ThoiGian: ThoiGian,
           [Op.or]: [{ SoTKNhan: SoTaiKhoan }, { SoTKRut: SoTaiKhoan }],
         },
+        include: [
+          {
+            model: db.TaiKhoan,
+            as: "TaiKhoanNguon",
+            include: { model: db.NguoiDung, attributes: ["HoTen"] },
+            attributes: ["SoTaiKhoan"],
+          },
+          {
+            model: db.TaiKhoan,
+            as: "TaiKhoanDich",
+            include: { model: db.NguoiDung, attributes: ["HoTen"] },
+            attributes: ["SoTaiKhoan"],
+          },
+        ],
+        nest: true,
         raw: true,
       })
         .then((item) => {
