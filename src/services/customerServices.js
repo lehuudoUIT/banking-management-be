@@ -129,9 +129,10 @@ const getSavingByAccountId = async (SoTaiKhoan, TrangThai) => {
                 item.LoaiTietKiem.KyHan * 30,
                 Math.round(item.LoaiTietKiem.LaiSuat * 1000) / 1000
               );
-
-              let ngaytamrut = item.NgayMo;
-              ngaytamrut.addMonths(item.LoaiTietKiem.KyHan);
+              let ngaytamrut = new Date(item.NgayMo);
+              ngaytamrut.setMonth(
+                ngaytamrut.getMonth() + item.LoaiTietKiem.KyHan
+              );
 
               let tamtinh = {
                 TienTamTinh: tientamtinh,
