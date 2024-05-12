@@ -130,7 +130,7 @@ const getSavingByAccountId = async (SoTaiKhoan, TrangThai) => {
                 Math.round(item.LoaiTietKiem.LaiSuat * 1000) / 1000
               );
 
-              let ngaytamrut = new Date();
+              let ngaytamrut = item.NgayMo;
               ngaytamrut.addMonths(item.LoaiTietKiem.KyHan);
 
               let tamtinh = {

@@ -86,7 +86,7 @@ const depositSaving = async (
         loaitietkiem.LaiSuat
       );
 
-      let ngaytamrut = new Date();
+      let ngaytamrut = phieutk.NgayMo;
       ngaytamrut.addMonths(loaitietkiem.KyHan);
 
       let tamtinh = {
