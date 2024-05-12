@@ -2,6 +2,8 @@ import { Op } from "sequelize";
 import db from "../models/index";
 import moment from "moment";
 
+import { tinhTienLai } from "./savingService";
+
 const getAccountById = async (MaKhachHang) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -113,17 +115,40 @@ const getSavingByAccountId = async (SoTaiKhoan, TrangThai) => {
       });
       let savings = db.PhieuTietKiem.findAll({
         where: condition,
+        include: [{ model: db.LoaiTietKiem }],
+        nest: true,
         raw: true,
       })
-        .then((item) => {
-          console.log(item);
+        .then((result) => {
+          let transactions = [];
+
+          result.forEach((item) => {
+            let tientamtinh = tinhTienLai(
+              item.SoTienGui,
+              item.LoaiTietKiem.KyHan * 30,
+              Math.round(item.LoaiTietKiem.LaiSuat * 1000) / 1000
+            );
+
+            let ngaytamrut = new Date();
+            ngaytamrut.addMonths(item.LoaiTietKiem.KyHan);
+
+            let tamtinh = {
+              TienTamTinh: tientamtinh,
+              NgayTamRut: ngaytamrut,
+            };
+
+            item.TamTinh = tamtinh;
+            transactions.push(item);
+          });
+
           resolve({
             errMessage: 0,
             message: "Get savings sucessfully!",
-            transaction: item,
+            transaction: transactions,
           });
         })
         .catch((err) => {
+          console.log(err);
           resolve({
             errMessage: 1,
             message: "Get savings failed!",

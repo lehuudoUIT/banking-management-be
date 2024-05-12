@@ -185,4 +185,5 @@ module.exports = {
   depositSaving,
   getSavingType,
   withdrawSaving,
+  tinhTienLai,
 };
