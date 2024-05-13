@@ -35,7 +35,6 @@ let handleLogin = async (req, res) => {
     httpOnly: true,
     maxAge: process.env.JWT_EXPIRES_IN,
   });
-  console.log(response);
   return res.status(200).json(response);
 };
 

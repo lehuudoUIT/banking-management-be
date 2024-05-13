@@ -58,6 +58,7 @@ let handleUserLogin = (username, password) => {
   return new Promise(async (resolve, reject) => {
     try {
       let userData = {};
+      userData.data = {};
 
       // User already exists
       let user = await db.NguoiDung.findOne({
@@ -73,7 +74,6 @@ let handleUserLogin = (username, password) => {
           check = 0;
         }
         if (check) {
-          userData.data = {};
           userData.errCode = 0;
           userData.errMessage = "Login success";
           userData.user = user;

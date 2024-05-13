@@ -33,6 +33,19 @@ import {
 
 import { getAllSavingType } from "../controllers/savingController";
 
+import { checkUserJWT } from "../middleware/JWTAction";
+
+// const checkUserLogin = (req, res, next) => {
+//   const nonSecurePaths = ["/", "/register", "/login"];
+//   if (nonSecurePaths.includes(req.path)) return next();
+
+//   //authenticate user
+//   if (user) {
+//     next();
+//   } else {
+//   }
+// };
+
 let router = Router();
 
 let initAPIRoutes = (app) => {
@@ -49,9 +62,8 @@ let initAPIRoutes = (app) => {
   router.post("/employee/rule/change", postChangeRule);
 
   // customer api
-  router.post("/customer/account/get-all", getAllAccountById);
+  router.post("/customer/account/get-all", checkUserJWT, getAllAccountById);
   router.post("/customer/account/transfer", postTransferAccount);
-  router.post("/customer/account/get-all", getAllAccountById);
   router.post("/customer/saving/deposit", postDepositSavingOnline);
   router.post("/customer/saving/withdraw", postWithdrawSavingOnline);
   router.post("/customer/saving/get-all", getAllSavingById);

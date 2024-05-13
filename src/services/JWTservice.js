@@ -3,8 +3,6 @@ import db from "../models/index";
 const getGroupWithRoles = async (user) => {
   return new Promise(async (resolve, reject) => {
     try {
-      console.log("🚀 ~ getGroupWithRoles ~ Mã nhóm:", user.MaNhom);
-
       let roles = await db.NhomNguoiDung.findAll({
         where: {
           MaNhom: user.MaNhom,

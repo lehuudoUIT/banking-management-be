@@ -6,7 +6,6 @@ const createJWT = (payload) => {
   let key = process.env.JWT_SECRET;
   try {
     token = jwt.sign(payload, key);
-    console.log("🚀 ~ createJWT ~ token:", token);
   } catch (error) {
     console.log("🚀 ~ createJWT ~ error:", error);
   }
@@ -15,24 +14,43 @@ const createJWT = (payload) => {
 
 const verifyToken = (token) => {
   let key = process.env.JWT_SECRET;
-  let data = null;
+  let decoded = null;
   //? Decode is token that's been decoded
-  return jwt.verify(token, key, function (err, decoded) {
-    if (err) {
-      console.log("🚀 ~ err:", err);
-      return data;
-      /*
-            err = {
-              name: 'JsonWebTokenError',
-              message: 'jwt malformed'
-            }
-          */
-    }
+  try {
+    let decoded = jwt.verify(token, key);
     return decoded;
-  });
+  } catch (error) {
+    console.log(error);
+  }
+  return decoded;
+};
+
+const checkUserJWT = (req, res, next) => {
+  let cookies = req.cookies;
+
+  if (cookies && cookies.jwt) {
+    let token = cookies.jwt;
+    let decoded = verifyToken(token);
+    console.log("🚀 ~ checkUserJWT ~ decoded:", decoded);
+    if (decoded) {
+      console.log("hallo");
+      next();
+    } else {
+      return res.status(401).json({
+        errCode: -1,
+        message: "User is not authenticated or session expires",
+      });
+    }
+  } else {
+    return res.status(401).json({
+      errCode: -2,
+      message: "User is not authenticated or session expires",
+    });
+  }
 };
 
 module.exports = {
   createJWT,
   verifyToken,
+  checkUserJWT,
 };

@@ -45,7 +45,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // config cookie parser
 app.use(cookieParser());
 
-configViewEngine(app);
+//configViewEngine(app);
 
 initAPIRoutes(app);
 

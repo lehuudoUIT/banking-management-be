@@ -24,7 +24,6 @@ const depositSaving = async (
   return new Promise(async (resolve, reject) => {
     try {
       let MaPhieu = uuidv4();
-      console.log("🚀 ~ returnnewPromise ~ MaPhieu:", MaPhieu);
 
       let plsql = `
         BEGIN
