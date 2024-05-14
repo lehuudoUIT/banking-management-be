@@ -84,7 +84,8 @@ TienChuyenToiThieu NUMBER;
 TienChuyenToiDa NUMBER;
 TONGTIEN NUMBER;
 PHI NUMBER;
-SODU NUMBER;
+SoDuNguon NUMBER;
+SoDuDich NUMBER;
 SODUTOITHIEU NUMBER;
   SOTIENRUTTOITHIEU NUMBER;
 N_ERRCODE NUMBER;
@@ -141,13 +142,13 @@ IF TenLoaiGD = 'transfer' THEN
   TONGTIEN := PHI + N_SoTien;
 
   -- Tính số dư của tài khoản sau khi chuyển
-  SELECT "SoDu" INTO SODU
+  SELECT "SoDu" INTO SoDuNguon
   FROM "TaiKhoan"
   WHERE "SoTaiKhoan" = V_SoTKRut;
 
-  SODU := SODU - TONGTIEN;
+  SoDuNguon := SoDuNguon - TONGTIEN;
   -- Kiểm tra số dư tối thiểu
-  IF SODU < SODUTOITHIEU THEN
+  IF SoDuNguon < SODUTOITHIEU THEN
     N_ERRCODE := 3;
     V_MESSAGE := 'So du phai lon hon so tien duy tri tai khoan';
     RAISE_APPLICATION_ERROR(-20003, V_MESSAGE);
@@ -155,12 +156,17 @@ IF TenLoaiGD = 'transfer' THEN
 
   -- Trừ tiền tài khoản gửi
   UPDATE "TaiKhoan"
-  SET "SoDu" = SODU
+  SET "SoDu" = SoDuNguon
   WHERE "SoTaiKhoan" = V_SoTKRut;
 
   -- Cộng tiền tài khoản nhận
   UPDATE "TaiKhoan"
   SET "SoDu" = "SoDu" + N_SoTien
+  WHERE "SoTaiKhoan" = V_SoTKNhan;
+
+  -- Lấy thông tin tài khoản đích
+  SELECT "SoDu" INTO SoDuDich
+  FROM "TaiKhoan"
   WHERE "SoTaiKhoan" = V_SoTKNhan;
 
 ELSIF TenLoaiGD = 'withdraw' THEN
@@ -178,13 +184,13 @@ ELSIF TenLoaiGD = 'withdraw' THEN
   TONGTIEN := PHI + N_SoTien;
 
   -- Tính số dư của tài khoản sau khi chuyển
-  SELECT "SoDu" INTO SODU
+  SELECT "SoDu" INTO SoDuNguon
   FROM "TaiKhoan"
   WHERE "SoTaiKhoan" = V_SoTKRut;
 
-  SODU := SODU - TONGTIEN;
+  SoDuNguon := SoDuNguon - TONGTIEN;
   -- Kiểm tra số dư tối thiểu
-  IF SODU < SODUTOITHIEU THEN
+  IF SoDuNguon < SODUTOITHIEU THEN
     N_ERRCODE := 3;
     V_MESSAGE := 'So du phai lon hon so tien duy tri tai khoan';
     RAISE_APPLICATION_ERROR(-20003, V_MESSAGE);
@@ -192,7 +198,7 @@ ELSIF TenLoaiGD = 'withdraw' THEN
 
   -- Trừ tiền tài khoản gửi
   UPDATE "TaiKhoan"
-  SET "SoDu" = SODU
+  SET "SoDu" = SoDuNguon
   WHERE "SoTaiKhoan" = V_SoTKRut;
 
 ELSE -- deposit transaction
@@ -200,19 +206,19 @@ ELSE -- deposit transaction
   TONGTIEN := N_SoTien - PHI;
 
   -- Tính số dư của tài khoản sau nộp tiền
-  SELECT "SoDu" INTO SODU
+  SELECT "SoDu" INTO SoDuNguon
   FROM "TaiKhoan"
   WHERE "SoTaiKhoan" = V_SoTKNhan;
   
-  SODU := SODU + TONGTIEN;
+  SoDuNguon := SoDuNguon + TONGTIEN;
 
   UPDATE "TaiKhoan"
-  SET "SoDu" = SODU
+  SET "SoDu" = SoDuNguon
   WHERE "SoTaiKhoan" = V_SoTKNhan;
   
 END IF;
 
-INSERT INTO "GiaoDich" ("SoTien", "SoDu", "ThoiGian","NoiDung","TongTien","SoTKNhan","SoTKRut","MaLoaiGD","MaNhanVien") VALUES (N_SoTien, SODU, CURRENT_TIMESTAMP, V_NoiDung, TONGTIEN, V_SoTKNhan, V_SoTKRut, N_MaLoaiGD, N_MaNhanVien);
+INSERT INTO "GiaoDich" ("SoTien", "SoDuNguon", "SoDuDich" , "ThoiGian" ,"NoiDung" ,"TongTien" ,"SoTKNhan" ,"SoTKRut" ,"MaLoaiGD" ,"MaNhanVien") VALUES (N_SoTien, SoDuNguon, SoDuDich, CURRENT_TIMESTAMP, V_NoiDung, TONGTIEN, V_SoTKNhan, V_SoTKRut, N_MaLoaiGD, N_MaNhanVien);
 
 COMMIT;
 END; 
@@ -229,8 +235,8 @@ CREATE OR REPLACE PROCEDURE P_THEM_PHIEUTIETKIEM(
   N_MaNhanVien IN "GiaoDich"."MaNhanVien"%TYPE
 )
 IS
-SoDu NUMBER;
-SoDuToiThieu NUMBER;
+SoDuNguon NUMBER;
+SoDuNguonToiThieu NUMBER;
   TienTietKiemToiThieu NUMBER;
   V_MESSAGE NVARCHAR2(255);
   MaLoaiGD NUMBER;
@@ -241,7 +247,7 @@ SELECT "GiaTri" INTO TienTietKiemToiThieu
 FROM "ThamSo"
 WHERE "Ten" = 'TienGuiTietKiemToiThieu';
 
-SELECT "GiaTri" INTO SoDuToiThieu
+SELECT "GiaTri" INTO SoDuNguonToiThieu
 FROM "ThamSo"
 WHERE "Ten" = 'SoTienDuyTriTaiKhoan';
 
@@ -258,20 +264,20 @@ END IF;
 IF V_SoTK IS NOT NULL THEN
 
   -- Kiểm tra số dư tối thiểu
-  SELECT "SoDu" INTO SoDu
+  SELECT "SoDu" INTO SoDuNguon
   FROM "TaiKhoan"
   WHERE "SoTaiKhoan" = V_SoTK;
 
-  SoDu := SoDu - 	N_SoTienGui;
+  SoDuNguon := SoDuNguon - N_SoTienGui;
   
-  IF SoDu < SoDuToiThieu THEN
+  IF SoDuNguon < SoDuNguonToiThieu THEN
     V_MESSAGE := 'So du con lai khong du de thuc hien giao dich ';
     RAISE_APPLICATION_ERROR(-20002, V_MESSAGE);
   END IF;
   
   -- Trừ tiền tài khoản gửi
   UPDATE "TaiKhoan"
-  SET "SoDu" = SoDu
+  SET "SoDu" = SoDuNguon
   WHERE "SoTaiKhoan" = V_SoTK;
 
 END IF;
@@ -285,7 +291,7 @@ WHERE "TenLoaiGD" = 'saving';
 INSERT INTO "PhieuTietKiem" ("MaPhieu", "NgayMo", "SoTienGui", "LaiSuat", "NgayRut", "SoTienRut", "PhuongThuc", "TrangThai", "MaLoaiTietKiem", "MaKhachHang", "SoTK") VALUES (V_MaPhieu, CURRENT_TIMESTAMP, N_SoTienGui, LaiSuat, NULL, NULL, V_PhuongThuc, 1, N_MaLoaiTietKiem, N_MaKhachHang, V_SoTK);
 
 -- Lưu giao dịch nộp tiền vào bảng giao dịch
-INSERT INTO "GiaoDich" ("SoTien", "SoDu", "ThoiGian" ,"NoiDung", "TongTien", "SoTKNhan", "SoTKRut", "MaLoaiGD", "MaNhanVien", "MaPhieu") VALUES (N_SoTienGui, SODU, CURRENT_TIMESTAMP, 'saving', N_SoTienGui, null, V_SoTK, MaLoaiGD, N_MaNhanVien, V_MaPhieu);
+INSERT INTO "GiaoDich" ("SoTien", "SoDuNguon", "ThoiGian" ,"NoiDung", "TongTien", "SoTKNhan", "SoTKRut", "MaLoaiGD", "MaNhanVien", "MaPhieu") VALUES (N_SoTienGui, SoDuNguon, CURRENT_TIMESTAMP, 'saving', N_SoTienGui, null, V_SoTK, MaLoaiGD, N_MaNhanVien, V_MaPhieu);
   
 END;
 `;
@@ -296,7 +302,7 @@ CREATE OR REPLACE PROCEDURE P_TATTOAN_PHIEUTIETKIEM(
   N_MaNhanVien IN "GiaoDich"."MaNhanVien"%TYPE
 )
 IS
-SoDu NUMBER;
+SoDuNguon NUMBER;
   ThoiGianGuiTietKiemToiThieu NUMBER;
   V_MESSAGE NVARCHAR2(255);
 NgayGui TIMESTAMP WITH LOCAL TIME ZONE;
@@ -368,9 +374,11 @@ ELSE
   WHERE "MaPhieu" = V_MaPhieu;
 
   UPDATE "PhieuTietKiem"
-  SET "MaLoaiTietKiem" = 0
+  SET "MaLoaiTietKiem" = (SELECT "MaLoaiTietKiem" 
+              FROM "LoaiTietKiem"
+              WHERE "KyHan" = 0)
   WHERE "MaPhieu" = V_MaPhieu;
-  
+
 END IF;
 
 SELECT "SoTienGui" INTO TienGui
@@ -396,15 +404,15 @@ WHERE "MaPhieu" = V_MaPhieu;
 IF SoTaiKhoan IS NOT NULL THEN
 
   -- Cộng tiền tài khoản gửi tiết kiệm
-  SELECT "SoDu" INTO SoDu
+  SELECT "SoDu" INTO SoDuNguon
   FROM "TaiKhoan"
   WHERE "SoTaiKhoan" = SoTaiKhoan;
 
-  SoDu := SoDu + 	TienRut;
+  SoDuNguon := SoDuNguon + 	TienRut;
 
   -- Cộng tiền tài khoản gửi
   UPDATE "TaiKhoan"
-  SET "SoDu" = SoDu
+  SET "SoDu" = SoDuNguon
   WHERE "SoTaiKhoan" = SoTaiKhoan;
 END IF;
 
@@ -419,7 +427,7 @@ SET "TrangThai"  = 0
 WHERE "MaPhieu" = V_MaPhieu;
 
 -- Lưu giao dịch nộp tiền vào bảng giao dịch
-INSERT INTO "GiaoDich" ("SoTien", "SoDu", "ThoiGian" ,"NoiDung", "TongTien", "SoTKNhan", "SoTKRut", "MaLoaiGD", "MaNhanVien", "MaPhieu") VALUES (TienRut, SoDu, CURRENT_TIMESTAMP, 'settlement', TienRut, SoTaiKhoan, null, MaLoaiGD, N_MaNhanVien, V_MaPhieu);
+INSERT INTO "GiaoDich" ("SoTien", "SoDuNguon", "ThoiGian" ,"NoiDung", "TongTien", "SoTKNhan", "SoTKRut", "MaLoaiGD", "MaNhanVien", "MaPhieu") VALUES (TienRut, SoDuNguon, CURRENT_TIMESTAMP, 'settlement', TienRut, SoTaiKhoan, null, MaLoaiGD, N_MaNhanVien, V_MaPhieu);
   
 END;
 `;
