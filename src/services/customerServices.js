@@ -110,9 +110,17 @@ const getSavingByAccountId = async (SoTaiKhoan, TrangThai) => {
         SoTK: SoTaiKhoan,
         TrangThai: TrangThai,
       };
+      console.log(condition.TrangThai);
+      if (condition.TrangThai != 0 || condition.TrangThai != 1)
+        delete condition.TrangThai;
+      console.log(condition);
+
+      return;
+
       Object.keys(condition).forEach((key) => {
         if (!condition[key]) delete condition[key];
       });
+
       let savings = db.PhieuTietKiem.findAll({
         where: condition,
         include: [{ model: db.LoaiTietKiem }],

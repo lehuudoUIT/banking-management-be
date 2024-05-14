@@ -1,5 +1,5 @@
 import db from "../models/index";
-
+import { tinhTienLai } from "./savingService";
 const createUser = async (
   NgheNghiep,
   Email,
@@ -268,7 +268,96 @@ const checkExistUser = async (Email, SDT, CCCD, username) => {
   return message;
 };
 
+const getSavingByAccountCCCD = async (CCCD, TrangThai) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let KhachHang = await db.NguoiDung.findOne({
+        where: {
+          CCCD: CCCD,
+        },
+        raw: true,
+      }).catch((err) => {
+        reject({
+          errMessage: 1,
+          message: "Get savings failed!",
+          error: err,
+        });
+      });
+      console.log(KhachHang);
+
+      if (!KhachHang) {
+        resolve({
+          errMessage: 1,
+          message: "Customer does not exist!",
+        });
+      } else {
+        let condition = {
+          MaKhachHang: KhachHang.MaNguoiDung,
+          TrangThai: TrangThai,
+        };
+        //Kiểm tra nếu trạng thái không tồn tại thì bỏ trạng thái
+
+        if (TrangThai != 0 && TrangThai != 1) delete condition.TrangThai;
+        console.log(condition);
+
+        let savings = await db.PhieuTietKiem.findAll({
+          where: condition,
+          include: [{ model: db.LoaiTietKiem }],
+          nest: true,
+          raw: true,
+        })
+          .then((result) => {
+            let transactions = [];
+
+            result.forEach((item) => {
+              if (item.TrangThai == 1) {
+                let tientamtinh = tinhTienLai(
+                  item.SoTienGui,
+                  item.LoaiTietKiem.KyHan * 30,
+                  Math.round(item.LoaiTietKiem.LaiSuat * 1000) / 1000
+                );
+                let ngaytamrut = new Date(item.NgayMo);
+                ngaytamrut.setMonth(
+                  ngaytamrut.getMonth() + item.LoaiTietKiem.KyHan
+                );
+
+                let tamtinh = {
+                  TienTamTinh: tientamtinh,
+                  NgayTamRut: ngaytamrut,
+                };
+
+                item.TamTinh = tamtinh;
+              }
+              transactions.push(item);
+            });
+
+            resolve({
+              errMessage: 0,
+              message: "Get savings sucessfully!",
+              transaction: transactions,
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+            reject({
+              errMessage: 1,
+              message: "Get savings failed!",
+              error: err,
+            });
+          });
+      }
+    } catch (error) {
+      reject({
+        errMessage: 2,
+        message: "Get savings failed!",
+        error: error,
+      });
+    }
+  });
+};
+
 module.exports = {
+  getSavingByAccountCCCD,
   createUser,
   createAccount,
   createWithdrawTransaction,

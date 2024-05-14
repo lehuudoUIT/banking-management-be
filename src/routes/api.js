@@ -6,8 +6,7 @@ import {
   postWithdrawAccount,
   postDepositAccount,
   postWithdrawSavingOffline,
-  postDepositSaving,
-  getAllSaving,
+  getAllSavingByCCCD,
   postCreateStatement,
   postCreateSavingReport,
   postChangeRule,
@@ -56,7 +55,7 @@ let initAPIRoutes = (app) => {
   router.post("/employee/account/deposit", postDepositAccount);
   router.post("/employee/saving/withdraw", postWithdrawSavingOffline);
   router.post("/employee/saving/deposit", postDepositSavingOffline);
-  router.post("/employee/saving/get-all", getAllSaving);
+  router.get("/employee/saving/get-all/:cccd/:trangthai", getAllSavingByCCCD);
   router.post("/employee/statement/create", postCreateStatement);
   router.post("/employee/saving/create-report", postCreateSavingReport);
   router.post("/employee/rule/change", postChangeRule);

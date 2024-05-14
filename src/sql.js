@@ -454,6 +454,24 @@ BEGIN
 END;
 `;
 
+let function_RandomString = `
+CREATE OR REPLACE FUNCTION RandomString (
+	p_Characters varchar2,
+	p_length NUMBER
+)
+RETURN varchar2
+IS
+	l_res varchar2(256);
+BEGIN
+	SELECT substr(listagg(substr(p_Characters, LEVEL, 1)) WITHIN GROUP(ORDER BY dbms_random.value), 1, p_length) 
+	INTO l_res 
+	FROM dual
+	CONNECT BY
+	LEVEL <= LENGTH(p_Characters);
+	RETURN l_res;
+END;
+`;
+
 const createProcedure = async (procedure) => {
   try {
     await db.sequelize.query(procedure);

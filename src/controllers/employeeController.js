@@ -2,6 +2,7 @@ import {
   createUser,
   createAccount,
   createWithdrawTransaction,
+  getSavingByAccountCCCD,
 } from "../services/employeeService";
 
 import { createTransaction } from "../services/customerServices";
@@ -10,6 +11,7 @@ import {
   depositSaving,
   withdrawSaving,
   createSavingReport,
+  getSavingByAccountId,
 } from "../services/savingService";
 
 import { createStatement } from "../services/accountService";
@@ -162,7 +164,22 @@ const postDepositSavingOffline = async (req, res) => {
   );
   return res.status(200).json(response);
 };
-const getAllSaving = async (req, res) => {};
+const getAllSavingByCCCD = async (req, res) => {
+  console.log(req.params);
+  const { cccd, trangthai } = req.params;
+  // TrangThai = 1 get active saving
+  // TrangThai = 0 get unactive saving
+  // else or none get all
+
+  if (!cccd) {
+    return res.status(500).json({
+      message: "Missing input parameters",
+      errCode: 1,
+    });
+  }
+  let response = await getSavingByAccountCCCD(cccd, trangthai);
+  return res.status(200).json(response);
+};
 const postCreateStatement = async (req, res) => {
   const { SoTaiKhoan, StartDate, EndDate } = req.body;
   if (!SoTaiKhoan || !StartDate || !EndDate) {
@@ -193,7 +210,7 @@ module.exports = {
   postWithdrawAccount,
   postDepositAccount,
   postWithdrawSavingOffline,
-  getAllSaving,
+  getAllSavingByCCCD,
   postCreateStatement,
   postCreateSavingReport,
   postChangeRule,
