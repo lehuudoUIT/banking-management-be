@@ -292,7 +292,9 @@ INSERT INTO "PhieuTietKiem" ("MaPhieu", "NgayMo", "SoTienGui", "LaiSuat", "NgayR
 
 -- Lưu giao dịch nộp tiền vào bảng giao dịch
 INSERT INTO "GiaoDich" ("SoTien", "SoDuNguon", "ThoiGian" ,"NoiDung", "TongTien", "SoTKNhan", "SoTKRut", "MaLoaiGD", "MaNhanVien", "MaPhieu") VALUES (N_SoTienGui, SoDuNguon, CURRENT_TIMESTAMP, 'saving', N_SoTienGui, null, V_SoTK, MaLoaiGD, N_MaNhanVien, V_MaPhieu);
-  
+
+P_AUTOMATICALLY_SAVING(V_MaPhieu, N_SoTienGui, V_PhuongThuc , N_MaLoaiTietKiem , N_MaKhachHang , V_SoTK);
+
 END;
 `;
 
@@ -428,7 +430,93 @@ WHERE "MaPhieu" = V_MaPhieu;
 
 -- Lưu giao dịch nộp tiền vào bảng giao dịch
 INSERT INTO "GiaoDich" ("SoTien", "SoDuNguon", "ThoiGian" ,"NoiDung", "TongTien", "SoTKNhan", "SoTKRut", "MaLoaiGD", "MaNhanVien", "MaPhieu") VALUES (TienRut, SoDuNguon, CURRENT_TIMESTAMP, 'settlement', TienRut, SoTaiKhoan, null, MaLoaiGD, N_MaNhanVien, V_MaPhieu);
-  
+
+P_DELETE_JOB(V_MaPhieu);
+
+END;
+`;
+
+let P_AUTOMATICALLY_SAVING = `
+CREATE OR REPLACE PROCEDURE P_AUTOMATICALLY_SAVING(
+  V_MaPhieu IN "PhieuTietKiem"."MaPhieu"%TYPE,
+  N_SoTienGui IN "PhieuTietKiem"."SoTienGui"%TYPE,
+  V_PhuongThuc IN "PhieuTietKiem"."PhuongThuc"%TYPE,
+  N_MaLoaiTietKiem IN "PhieuTietKiem"."MaLoaiTietKiem"%TYPE,
+  N_MaKhachHang IN "PhieuTietKiem"."MaKhachHang"%TYPE,
+  V_SoTK IN "PhieuTietKiem"."SoTK"%TYPE
+) AS
+KyHan NUMBER;
+  NgayTuDongGiaHan TIMESTAMP;
+MaPhieuMoi NVARCHAR2(255);
+JobNameConvert NVARCHAR2(255);
+BEGIN
+SELECT "KyHan" INTO KyHan
+FROM "LoaiTietKiem"
+WHERE "MaLoaiTietKiem" = N_MaLoaiTietKiem;
+
+IF KyHan != 5 THEN
+  -- Tạo mã phiếu mới
+  MaPhieuMoi := RandomString('123456789abcdefghiklmnopqrst', 20);
+    -- Tính ngày tự động gia hạn
+    NgayTuDongGiaHan := SYSTIMESTAMP + INTERVAL '1' MONTH * KyHan;
+    JobNameConvert := CONVERT_JOB_NAME(V_MaPhieu, FALSE);
+    -- Create the job
+    DBMS_SCHEDULER.CREATE_JOB (
+        job_name => JobNameConvert,
+        job_type => 'PLSQL_BLOCK',
+        job_action => '
+            BEGIN
+              P_TATTOAN_PHIEUTIETKIEM (''' || V_MaPhieu || ''','''|| NULL ||''');
+              P_THEM_PHIEUTIETKIEM (''' || MaPhieuMoi || ''',
+              '''|| N_SoTienGui||''',
+              ''' || V_PhuongThuc||''',
+              ''' || N_MaLoaiTietKiem||''',
+              ''' || N_MaKhachHang||''',
+              ''' || V_SoTK ||''',
+              '''|| NULL ||''');
+              COMMIT;	
+            END;
+            ',
+        start_date => NgayTuDongGiaHan,
+        enabled => TRUE
+    );
+END IF;
+END;
+`;
+
+let P_DELETE_JOB = `
+CREATE OR REPLACE PROCEDURE P_DELETE_JOB(
+  job_name_input IN VARCHAR2
+) AS
+job_count NUMBER;
+job_name_convert NVARCHAR2(255); 
+BEGIN
+job_name_convert := CONVERT_JOB_NAME(job_name_input, FALSE);
+DBMS_OUTPUT.PUT_LINE(job_name_convert);
+
+SELECT COUNT(*) INTO job_count
+  FROM ALL_SCHEDULER_JOBS
+  WHERE JOB_NAME = job_name_convert;
+ 
+  IF job_count > 0 THEN  
+    -- Delete the job
+      DBMS_SCHEDULER.CREATE_JOB (
+      job_name          => 'delete_' ||  job_name_convert ,
+      job_type          => 'PLSQL_BLOCK',
+      job_action        => 'BEGIN 
+                    DBMS_SCHEDULER.DROP_JOB(
+                        job_name => ''' || job_name_convert || '''
+                    );	
+                END;',
+      start_date        => SYSTIMESTAMP + INTERVAL '2' SECOND,
+      end_date        => SYSTIMESTAMP + INTERVAL '20' SECOND,
+      enabled           => TRUE
+    );
+
+    DBMS_OUTPUT.PUT_LINE('Job ' || job_name_convert || ' deleted successfully.');
+ELSE
+    DBMS_OUTPUT.PUT_LINE('Job ' || job_name_convert || ' does not exist.');
+END IF;
 END;
 `;
 
@@ -472,6 +560,28 @@ BEGIN
 END;
 `;
 
+let function_convert_job_name = `
+CREATE OR REPLACE FUNCTION CONVERT_JOB_NAME(
+  input_string VARCHAR2,
+  revert BOOLEAN
+) RETURN VARCHAR2 AS
+  output_string VARCHAR2(255);
+BEGIN
+  IF revert THEN
+      -- Revert '_' to '-'
+      output_string := REPLACE(input_string, '_', '-');
+      output_string := SUBSTR(input_string, 5);
+      output_string := LOWER(output_string);
+  ELSE
+      -- Revert '-' to '_'
+      output_string := 'job_' || REPLACE(input_string, '-', '_');
+      output_string := UPPER(output_string);
+  END IF;
+
+  RETURN output_string;
+END;
+`;
+
 const createProcedure = async (procedure) => {
   try {
     await db.sequelize.query(procedure);
@@ -493,3 +603,7 @@ createProcedure(P_THEM_GIAODICH);
 createProcedure(P_THEM_PHIEUTIETKIEM);
 createProcedure(P_TATTOAN_PHIEUTIETKIEM);
 createProcedure(function_TinhLai);
+createProcedure(function_RandomString);
+createProcedure(function_convert_job_name);
+createProcedure(P_DELETE_JOB);
+createProcedure(P_AUTOMATICALLY_SAVING);
