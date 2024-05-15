@@ -5,7 +5,7 @@ const getListTransactionFee = async () => {
     try {
       let ListFee = await db.LoaiGD.findAll({
         raw: true,
-      }).then((err) => {
+      }).catch((err) => {
         console.log(err);
       });
 
