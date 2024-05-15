@@ -39,15 +39,24 @@ const depositSaving = async (
         stk: SoTK,
         manv: MaNhanVien,
       };
-
+      console.log(replacements);
       //! Tạo giao dịch tiết kiệm
       await db.sequelize
         .query(plsql, {
-          replacements: replacements,
+          replacements: {
+            maphieu: MaPhieu,
+            sotien: SoTienGui,
+            phuongthuc: PhuongThuc,
+            maloaitk: MaLoaiTietKiem,
+            makh: MaKhachHang,
+            stk: SoTK || null,
+            manv: MaNhanVien,
+          },
         })
         .catch((err) => {
+          console.log(err);
           resolve({
-            errMessage: 0,
+            errMessage: 5,
             message: "Create saving failed!",
             err: err,
           });
