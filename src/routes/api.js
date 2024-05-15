@@ -34,6 +34,8 @@ import { getAllSavingType } from "../controllers/savingController";
 
 import { checkUserJWT } from "../middleware/JWTAction";
 
+import { getAllTransactionFee } from "../controllers/transactionController";
+
 // const checkUserLogin = (req, res, next) => {
 //   const nonSecurePaths = ["/", "/register", "/login"];
 //   if (nonSecurePaths.includes(req.path)) return next();
@@ -79,6 +81,8 @@ let initAPIRoutes = (app) => {
   router.post("/system/account/cccd-exist", postCheckExistCccd);
   router.post("/login", handleLogin);
   router.post("/system/otp/send", handleSendOtp);
+  //transaction
+  router.get("/transaction-fees", getAllTransactionFee);
 
   return app.use("/api/v1/", router);
 };
