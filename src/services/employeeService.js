@@ -68,76 +68,6 @@ const createUser = async (
   });
 };
 
-const createAccount = async (MaKhachHang, LoaiTaiKhoan) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      let plsql = `
-                BEGIN
-                P_THEM_TAIKHOAN (:stk, :makh, :loaitk, :sodu, :trangthai);
-                END;
-                `;
-
-      const { count, rows } = await db.TaiKhoan.findAndCountAll({
-        where: {
-          MaKhachHang: MaKhachHang,
-        },
-        raw: true,
-      });
-
-      // Define prefix of account number
-      let prefix = count + 1;
-      prefix = prefix.toString();
-      prefix += prefix;
-
-      let user = await db.NguoiDung.findOne({
-        where: {
-          MaNguoiDung: MaKhachHang,
-        },
-        raw: true,
-        attributes: ["CCCD"],
-      });
-
-      let newStk = prefix + user.CCCD;
-
-      await db.sequelize
-        .query(plsql, {
-          replacements: {
-            stk: newStk,
-            makh: MaKhachHang,
-            loaitk: LoaiTaiKhoan,
-            sodu: "50000",
-            trangthai: "1",
-          },
-        })
-        .then(async () => {
-          let account = await db.TaiKhoan.findOne({
-            where: {
-              SoTaiKhoan: newStk,
-            },
-            raw: true,
-          });
-          resolve({
-            errMessage: 0,
-            message: "Create account successfully!",
-            account: account,
-          });
-        })
-        .catch((err) => {
-          reject({
-            errMessage: 3,
-            message: "Create account unsuccessfully!",
-          });
-        });
-    } catch (error) {
-      reject({
-        errCode: 2,
-        message: "Create account unsuccessfully!",
-        errMess: error,
-      });
-    }
-  });
-};
-
 const isExistedCCCD = async (CCCD) => {
   let cccd = await db.NguoiDung.findOne({
     where: {
@@ -359,6 +289,5 @@ const getSavingByAccountCCCD = async (CCCD, TrangThai) => {
 module.exports = {
   getSavingByAccountCCCD,
   createUser,
-  createAccount,
   createWithdrawTransaction,
 };

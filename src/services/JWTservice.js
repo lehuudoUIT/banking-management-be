@@ -20,6 +20,7 @@ const getGroupWithRoles = async (user) => {
       })
         .then((result) => {
           let newResult = [];
+          //console.log(result);
           result.forEach((element) => {
             newResult.push(element.PhanQuyen.ChucNang.Url);
           });

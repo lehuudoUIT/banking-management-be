@@ -92,6 +92,7 @@ let handleUserLogin = (username, password) => {
       let payload = {
         email: user.Email,
         groupWithRoles,
+        maNhom: user.MaNhom,
         expiresIn: process.env.JWT_EXPIRESIN_IN,
       };
 

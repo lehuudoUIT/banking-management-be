@@ -20,28 +20,6 @@ const getAllAccountById = async (req, res) => {
   return res.status(200).json(response);
 };
 
-const postTransferAccount = async (req, res) => {
-  const { SoTien, NoiDung, SoTKNhan, SoTKRut, MaLoaiGD } = req.body;
-
-  if (!SoTien || !NoiDung || !SoTKNhan || !SoTKRut || !MaLoaiGD) {
-    return res.status(500).json({
-      message: "Missing input parameters",
-      errCode: 1,
-    });
-  }
-
-  let response = await createTransaction(
-    SoTien,
-    NoiDung,
-    SoTKNhan,
-    SoTKRut,
-    MaLoaiGD,
-    null,
-    null
-  );
-  return res.status(200).json(response);
-};
-
 const postDepositSavingOnline = async (req, res) => {
   const { SoTienGui, PhuongThuc, MaLoaiTietKiem, MaKhachHang, SoTK } = req.body;
   if (!SoTienGui || !PhuongThuc || !MaLoaiTietKiem || !MaKhachHang || !SoTK) {
@@ -107,7 +85,6 @@ const getAllTransaction = async (req, res) => {
 
 module.exports = {
   getAllAccountById,
-  postTransferAccount,
   postDepositSavingOnline,
   postWithdrawSavingOnline,
   getAllSavingById,

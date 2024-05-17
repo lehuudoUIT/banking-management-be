@@ -21,6 +21,7 @@ const postCheckExistAccount = async (req, res) => {
 
 let handleLogin = async (req, res) => {
   const { username, password } = req.body;
+  console.log(req.user);
   if (!username || !password) {
     return res.status(500).json({
       errCode: 1,
