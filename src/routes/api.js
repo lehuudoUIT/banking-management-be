@@ -1,34 +1,13 @@
 import { Router } from "express";
 
-// import {
-//   postCreateUserCIF,
-//   postWithdrawSavingOffline,
-//   getAllSavingByCCCD,
-//   postCreateStatement,
-//   postCreateSavingReport,
-//   postChangeRule,
-//   postDepositSavingOffline,
-// } from "../controllers/employeeController";
-
-import { postCreateTransactionType } from "../controllers/adminController";
-import {
-  postCheckExistAccount,
-  handleLogin,
-  handleSendOtp,
-  postCheckExistCccd,
-} from "../controllers/systemController";
-
-// import {
-//   getAllAccountById,
-//   postDepositSavingOnline,
-//   postWithdrawSavingOnline,
-//   getAllSavingById,
-//   getAllTransaction,
-// } from "../controllers/customerController";
+import { handleLogin, handleSendOtp } from "../controllers/systemController";
 
 import { checkUserJWT, checkUserPermission } from "../middleware/JWTAction";
 
-import { getAllTransactionFee } from "../controllers/transactionController";
+import {
+  getAllTransactionFee,
+  getAllTransaction,
+} from "../controllers/transactionController";
 
 import {
   getListAccountByRole,
@@ -37,6 +16,9 @@ import {
   postWithdrawAccount,
   postDepositAccount,
   postTransferAccount,
+  postCreateStatement,
+  postCheckExistAccount,
+  postCheckExistCccd,
 } from "../controllers/accountController";
 
 import {
@@ -46,7 +28,10 @@ import {
   postDepositSaving,
   postWithdrawSaving,
   getAllSavingType,
+  postCreateSavingReport,
 } from "../controllers/savingController";
+
+import { postCreateUserCIF } from "../controllers/userController";
 
 let router = Router();
 
@@ -85,7 +70,6 @@ let initAPIRoutes = (app) => {
   router.post("/login", handleLogin);
   // router.post("/system/otp/send", handleSendOtp);
   //transaction
-  //router.get("/transaction-fees", getAllTransactionFee);
   // new api
   //! ACCOUNT
   router.get("/accounts", getListAccountByRole);
@@ -94,14 +78,23 @@ let initAPIRoutes = (app) => {
   router.post("/accounts/deposit", postDepositAccount);
   router.post("/accounts/withdraw", postWithdrawAccount);
   router.post("/accounts/transfer", postTransferAccount);
+  router.post("/accounts/statement", postCreateStatement);
+  router.get("/accounts/check-exist/:sotaikhoan", postCheckExistAccount);
+  router.post("/accounts/cccd-exist/:cccd", postCheckExistCccd);
+
   //! SAVING ACCOUNT
   router.get("/saving-accounts", getAllSaving);
   router.get("/saving-accounts/detail/:sotaikhoan", getDetailSavingById);
   router.get("/saving-accounts/:cccd/:trangthai", getAllSavingByCCCD);
   router.post("/saving-accounts/deposit", postDepositSaving);
   router.post("/saving-accounts/withdraw", postWithdrawSaving);
+  router.post("/saving-accounts/report", postCreateSavingReport);
   //! TRANSACTION
+  router.post("/transaction/get-all", getAllTransaction);
+  router.get("/transaction-fees", getAllTransactionFee);
+
   //! USER
+  router.post("/user/create", postCreateUserCIF);
 
   return app.use("/api/v1/", router);
 };

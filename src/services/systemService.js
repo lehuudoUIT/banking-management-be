@@ -5,55 +5,6 @@ const nodemailer = require("nodemailer");
 import { getGroupWithRoles } from "./JWTservice";
 import { createJWT } from "../middleware/JWTAction";
 
-const checkExistAccount = async (SoTaiKhoan) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      let account = await db.TaiKhoan.findOne({
-        where: {
-          SoTaiKhoan: SoTaiKhoan,
-        },
-        include: [
-          {
-            model: db.NguoiDung,
-            required: true,
-          },
-        ],
-        raw: true,
-      })
-        .then((result) => {
-          return {
-            SoTaiKhoan: result.SoTaiKhoan,
-            HoTen: result["NguoiDung.HoTen"],
-          };
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-
-      console.log(account);
-
-      if (!account) {
-        resolve({
-          errMessage: 1,
-          message: "Account is not existed!",
-        });
-      } else {
-        resolve({
-          errMessage: 0,
-          message: "Account is existed!",
-          account: account,
-        });
-      }
-    } catch (error) {
-      resolve({
-        errMessage: 2,
-        message: "Check account failed!",
-        error: error,
-      });
-    }
-  });
-};
-
 let handleUserLogin = (username, password) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -153,61 +104,7 @@ const sendOTP = async (otp, email) => {
   });
 };
 
-const checkExistCccd = async (cccd) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      let NguoiDung = await db.NguoiDung.findOne({
-        where: {
-          CCCD: cccd,
-        },
-        raw: true,
-      }).catch((err) => {
-        console.log("🚀 ~ returnnewPromise ~ err:", err);
-        return {};
-      });
-      if (!NguoiDung) {
-        resolve({
-          errMessage: 1,
-          message: "User does not exist!",
-        });
-      } else {
-        NguoiDung.password = undefined;
-        let accounts = await db.TaiKhoan.findAll({
-          where: {
-            MaKhachHang: NguoiDung.MaNguoiDung,
-          },
-          raw: true,
-        }).catch((err) => {
-          console.log(err);
-        });
-        if (accounts.length < 1) {
-          resolve({
-            errMessage: 2,
-            message: "User do not have any account!",
-            NguoiDung: NguoiDung,
-          });
-        } else {
-          resolve({
-            errMessage: 3,
-            message: "Get accounts successfully!",
-            NguoiDung: NguoiDung,
-            DanhSachTaiKhoan: accounts,
-          });
-        }
-      }
-    } catch (error) {
-      resolve({
-        errMessage: 2,
-        message: "Get accounts failed!",
-        error: error,
-      });
-    }
-  });
-};
-
 module.exports = {
-  checkExistAccount,
   handleUserLogin,
   sendOTP,
-  checkExistCccd,
 };

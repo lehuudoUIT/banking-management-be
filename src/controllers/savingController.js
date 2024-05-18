@@ -5,6 +5,7 @@ import {
   getListSaving,
   getSavingByAccountId,
   getSavingByAccountCCCD,
+  createSavingReport,
 } from "../services/savingService";
 
 const getAllSavingType = async (req, res) => {
@@ -90,6 +91,18 @@ const postWithdrawSaving = async (req, res) => {
   return res.status(200).json(response);
 };
 
+const postCreateSavingReport = async (req, res) => {
+  const { Ngay, isCreateReport } = req.body;
+  if (!Ngay || !isCreateReport) {
+    return res.status(500).json({
+      message: "Missing input parameters",
+      errCode: 1,
+    });
+  }
+  let response = await createSavingReport(Ngay, isCreateReport);
+  return res.status(200).json(response);
+};
+
 module.exports = {
   getAllSaving,
   getAllSavingType,
@@ -97,4 +110,5 @@ module.exports = {
   getDetailSavingById,
   postDepositSaving,
   postWithdrawSaving,
+  postCreateSavingReport,
 };

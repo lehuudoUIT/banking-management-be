@@ -3,7 +3,10 @@ import {
   getDetailAccount,
   createAccount,
   createTransaction,
+  checkExistAccount,
+  checkExistCccd,
 } from "../services/accountService";
+import { createStatement } from "../services/accountService";
 
 const getListAccountByRole = async (req, res) => {
   let { maNhom, email } = req.user;
@@ -98,6 +101,36 @@ const postTransferAccount = async (req, res) => {
   return res.status(200).json(response);
 };
 
+const postCreateStatement = async (req, res) => {
+  const { SoTaiKhoan, StartDate, EndDate } = req.body;
+  if (!SoTaiKhoan || !StartDate || !EndDate) {
+    return res.status(500).json({
+      message: "Missing input parameters",
+      errCode: 1,
+    });
+  }
+  let response = await createStatement(SoTaiKhoan, StartDate, EndDate);
+  return res.status(200).json(response);
+};
+
+const postCheckExistAccount = async (req, res) => {
+  const sotaikhoan = req.params.sotaikhoan;
+  let response = await checkExistAccount(sotaikhoan);
+  return res.status(200).json(response);
+};
+
+const postCheckExistCccd = async (req, res) => {
+  const { CCCD } = req.body;
+  if (!CCCD) {
+    return res.status(500).json({
+      errCode: 1,
+      message: "Missing input parameter !",
+    });
+  }
+  let response = await checkExistCccd(CCCD);
+  return res.status(200).json(response);
+};
+
 module.exports = {
   getListAccountByRole,
   getDetailAccountById,
@@ -105,4 +138,7 @@ module.exports = {
   postWithdrawAccount,
   postDepositAccount,
   postTransferAccount,
+  postCreateStatement,
+  postCheckExistAccount,
+  postCheckExistCccd,
 };
