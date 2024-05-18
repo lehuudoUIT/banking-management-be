@@ -1,14 +1,14 @@
 import { Router } from "express";
 
-import {
-  postCreateUserCIF,
-  postWithdrawSavingOffline,
-  getAllSavingByCCCD,
-  postCreateStatement,
-  postCreateSavingReport,
-  postChangeRule,
-  postDepositSavingOffline,
-} from "../controllers/employeeController";
+// import {
+//   postCreateUserCIF,
+//   postWithdrawSavingOffline,
+//   getAllSavingByCCCD,
+//   postCreateStatement,
+//   postCreateSavingReport,
+//   postChangeRule,
+//   postDepositSavingOffline,
+// } from "../controllers/employeeController";
 
 import { postCreateTransactionType } from "../controllers/adminController";
 import {
@@ -18,15 +18,13 @@ import {
   postCheckExistCccd,
 } from "../controllers/systemController";
 
-import {
-  getAllAccountById,
-  postDepositSavingOnline,
-  postWithdrawSavingOnline,
-  getAllSavingById,
-  getAllTransaction,
-} from "../controllers/customerController";
-
-import { getAllSavingType } from "../controllers/savingController";
+// import {
+//   getAllAccountById,
+//   postDepositSavingOnline,
+//   postWithdrawSavingOnline,
+//   getAllSavingById,
+//   getAllTransaction,
+// } from "../controllers/customerController";
 
 import { checkUserJWT, checkUserPermission } from "../middleware/JWTAction";
 
@@ -40,6 +38,15 @@ import {
   postDepositAccount,
   postTransferAccount,
 } from "../controllers/accountController";
+
+import {
+  getAllSaving,
+  getAllSavingByCCCD,
+  getDetailSavingById,
+  postDepositSaving,
+  postWithdrawSaving,
+  getAllSavingType,
+} from "../controllers/savingController";
 
 let router = Router();
 
@@ -82,12 +89,17 @@ let initAPIRoutes = (app) => {
   // new api
   //! ACCOUNT
   router.get("/accounts", getListAccountByRole);
-  router.get("/accounts/:sotaikhoan", getDetailAccountById);
-  router.post("/accounts", postCreateUserAccount);
+  router.get("/accounts/detail/:sotaikhoan", getDetailAccountById);
+  router.post("/accounts/create", postCreateUserAccount);
   router.post("/accounts/deposit", postDepositAccount);
   router.post("/accounts/withdraw", postWithdrawAccount);
   router.post("/accounts/transfer", postTransferAccount);
   //! SAVING ACCOUNT
+  router.get("/saving-accounts", getAllSaving);
+  router.get("/saving-accounts/detail/:sotaikhoan", getDetailSavingById);
+  router.get("/saving-accounts/:cccd/:trangthai", getAllSavingByCCCD);
+  router.post("/saving-accounts/deposit", postDepositSaving);
+  router.post("/saving-accounts/withdraw", postWithdrawSaving);
   //! TRANSACTION
   //! USER
 

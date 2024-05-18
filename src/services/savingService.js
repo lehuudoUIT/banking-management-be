@@ -299,10 +299,270 @@ const createSavingReport = async (Ngay, isCreateReport) => {
   });
 };
 
+const getListSaving = async (manhom, email) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let tennhom = await db.NhomNguoiDung.findOne({
+        where: {
+          MaNhom: manhom,
+        },
+        raw: true,
+      })
+        .then((result) => {
+          return result.TenNhom;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+
+      if (tennhom === "Customer") {
+        //! Nếu người dùng là khách hàng chỉ trả về danh sách phiếu tiết kiệm của khách hàng
+        await db.NguoiDung.findAll({
+          where: {
+            Email: email,
+          },
+          include: { model: db.PhieuTietKiem },
+          raw: true,
+          nest: true,
+        })
+          .then((result) => {
+            if (!result || result.length == 0) {
+              resolve({
+                errCode: 1,
+                message: "User does not have saving account!",
+              });
+            } else {
+              let newResult = [];
+
+              result.forEach((element) => {
+                if (element.PhieuTietKiems.TrangThai == 1)
+                  newResult.push(element.PhieuTietKiems);
+              });
+
+              resolve({
+                errMessage: 0,
+                message: "Get list savings successfully!",
+                accounts: newResult,
+              });
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } else {
+        //! Lấy toàn bộ danh sách phiếu tiết kiệm
+        db.PhieuTietKiem.findAll()
+          .catch((err) => {
+            console.log(err);
+          })
+          .then((result) => {
+            resolve({
+              errCode: 0,
+              message: "Get list savings successfully!",
+              accounts: result,
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+            resolve({
+              errCode: 3,
+              message: "Get list savings unsuccessfully!",
+              err: err,
+            });
+          });
+      }
+    } catch (error) {
+      reject({
+        errCode: 2,
+        message: "Get list savings unsuccessfully!",
+        err: error,
+      });
+    }
+  });
+};
+
+const getSavingByAccountId = async (SoTaiKhoan, TrangThai) => {
+  return new Promise((resolve, reject) => {
+    try {
+      // ! Check tài khoản có tồn tại hay không
+      db.TaiKhoan.findOne({
+        where: {
+          SoTaiKhoan: SoTaiKhoan,
+        },
+      }).then((result) => {
+        if (!result || result.length == 0)
+          return resolve({
+            errMessage: 4,
+            message: "Account does not exist!",
+          });
+      });
+
+      let condition = {
+        SoTK: SoTaiKhoan,
+        TrangThai: TrangThai,
+      };
+
+      if (condition.TrangThai != 0 && condition.TrangThai != 1) {
+        delete condition.TrangThai;
+      }
+
+      let savings = db.PhieuTietKiem.findAll({
+        where: condition,
+        include: [{ model: db.LoaiTietKiem }],
+        nest: true,
+        raw: true,
+      })
+        .then((result) => {
+          console.log(result);
+          if (!result || result.length == 0)
+            return resolve({
+              errMessage: 0,
+              message: "Account do not have any saving!",
+            });
+
+          let transactions = [];
+
+          result.forEach((item) => {
+            if (item.TrangThai == 1) {
+              let tientamtinh = tinhTienLai(
+                item.SoTienGui,
+                item.LoaiTietKiem.KyHan * 30,
+                Math.round(item.LoaiTietKiem.LaiSuat * 1000) / 1000
+              );
+              let ngaytamrut = new Date(item.NgayMo);
+              ngaytamrut.setMonth(
+                ngaytamrut.getMonth() + item.LoaiTietKiem.KyHan
+              );
+
+              let tamtinh = {
+                TienTamTinh: tientamtinh,
+                NgayTamRut: ngaytamrut,
+              };
+
+              item.TamTinh = tamtinh;
+            }
+            transactions.push(item);
+          });
+
+          resolve({
+            errMessage: 0,
+            message: "Get savings sucessfully!",
+            transaction: transactions,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+          resolve({
+            errMessage: 1,
+            message: "Get savings failed!",
+            error: err,
+          });
+        });
+    } catch (error) {
+      resolve({
+        errMessage: 2,
+        message: "Get savings failed!",
+        error: error,
+      });
+    }
+  });
+};
+
+const getSavingByAccountCCCD = async (CCCD, TrangThai) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let KhachHang = await db.NguoiDung.findOne({
+        where: {
+          CCCD: CCCD,
+        },
+        raw: true,
+      }).catch((err) => {
+        reject({
+          errMessage: 1,
+          message: "Get savings failed!",
+          error: err,
+        });
+      });
+      console.log(KhachHang);
+
+      if (!KhachHang) {
+        resolve({
+          errMessage: 1,
+          message: "Customer does not exist!",
+        });
+      } else {
+        let condition = {
+          MaKhachHang: KhachHang.MaNguoiDung,
+          TrangThai: TrangThai,
+        };
+        //Kiểm tra nếu trạng thái không tồn tại thì bỏ trạng thái
+
+        if (TrangThai != 0 && TrangThai != 1) delete condition.TrangThai;
+        console.log(condition);
+
+        let savings = await db.PhieuTietKiem.findAll({
+          where: condition,
+          include: [{ model: db.LoaiTietKiem }],
+          nest: true,
+          raw: true,
+        })
+          .then((result) => {
+            let transactions = [];
+
+            result.forEach((item) => {
+              if (item.TrangThai == 1) {
+                let tientamtinh = tinhTienLai(
+                  item.SoTienGui,
+                  item.LoaiTietKiem.KyHan * 30,
+                  Math.round(item.LoaiTietKiem.LaiSuat * 1000) / 1000
+                );
+                let ngaytamrut = new Date(item.NgayMo);
+                ngaytamrut.setMonth(
+                  ngaytamrut.getMonth() + item.LoaiTietKiem.KyHan
+                );
+
+                let tamtinh = {
+                  TienTamTinh: tientamtinh,
+                  NgayTamRut: ngaytamrut,
+                };
+
+                item.TamTinh = tamtinh;
+              }
+              transactions.push(item);
+            });
+
+            resolve({
+              errMessage: 0,
+              message: "Get savings sucessfully!",
+              transaction: transactions,
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+            reject({
+              errMessage: 1,
+              message: "Get savings failed!",
+              error: err,
+            });
+          });
+      }
+    } catch (error) {
+      reject({
+        errMessage: 2,
+        message: "Get savings failed!",
+        error: error,
+      });
+    }
+  });
+};
+
 module.exports = {
   depositSaving,
   getSavingType,
   withdrawSaving,
   tinhTienLai,
   createSavingReport,
+  getListSaving,
+  getSavingByAccountId,
+  getSavingByAccountCCCD,
 };

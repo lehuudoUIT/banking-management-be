@@ -51,14 +51,16 @@ const checkUserJWT = (req, res, next) => {
   }
 };
 
+function routeToRegex(route) {
+  return new RegExp(`^` + route.replace(/:\w+/g, "[^/]+") + "$");
+}
+
 const checkUserPermission = (req, res, next) => {
   if (nonSecurePaths.includes(req.path)) return next();
   if (req.user) {
     let email = req.user.email;
     let roles = req.user.groupWithRoles;
     let currentUrl = req.path;
-
-    console.log(req.method);
 
     console.log(roles);
     if (!roles || roles.length === 0) {
@@ -71,7 +73,13 @@ const checkUserPermission = (req, res, next) => {
     }
     let canAccess = false;
     roles.forEach((element) => {
-      if (currentUrl.includes(element)) canAccess = true;
+      if (currentUrl == element) canAccess = true;
+
+      //! Nếu route là route động thì lấy pattern của route sau đó so sánh với url hiện tại
+      if (element.includes(":")) {
+        let routePattern = routeToRegex(element);
+        if (routePattern.test(currentUrl)) canAccess = true;
+      }
     });
 
     if (canAccess) {

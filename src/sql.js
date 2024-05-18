@@ -218,7 +218,7 @@ ELSE -- deposit transaction
   
 END IF;
 
-INSERT INTO "GiaoDich" ("SoTien", "SoDuNguon", "SoDuDich" , "ThoiGian" ,"NoiDung" ,"TongTien" ,"SoTKNhan" ,"SoTKRut" ,"MaLoaiGD" ,"MaNhanVien") VALUES (N_SoTien, SoDuNguon, SoDuDich, CURRENT_TIMESTAMP, V_NoiDung, TONGTIEN, V_SoTKNhan, V_SoTKRut, N_MaLoaiGD, N_MaNhanVien);
+INSERT INTO "GiaoDich" ("SoTien", "SoDuNguon", "SoDuDich" , "ThoiGian" ,"NoiDung" ,"TongTien" ,"SoTKNhan" ,"SoTKRut" ,"MaLoaiGD" ,"MaNhanVien", "CCCD") VALUES (N_SoTien, SoDuNguon, SoDuDich, CURRENT_TIMESTAMP, V_NoiDung, TONGTIEN, V_SoTKNhan, V_SoTKRut, N_MaLoaiGD, N_MaNhanVien, V_CCCD);
 
 COMMIT;
 END; 

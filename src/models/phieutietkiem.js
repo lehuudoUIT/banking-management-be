@@ -12,6 +12,9 @@ module.exports = (sequelize, DataTypes) => {
       PhieuTietKiem.belongsTo(models.LoaiTietKiem, {
         foreignKey: "MaLoaiTietKiem",
       });
+      PhieuTietKiem.belongsTo(models.NguoiDung, {
+        foreignKey: "MaPhieu",
+      });
     }
   }
   PhieuTietKiem.init(

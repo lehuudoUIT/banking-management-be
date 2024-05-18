@@ -114,7 +114,7 @@ const getListAccount = async (manhom, email) => {
     } catch (error) {
       reject({
         errCode: 2,
-        message: "Create statement unsuccessfully!",
+        message: "Get list accounts unsuccessfully!",
         err: error,
       });
     }
@@ -236,7 +236,7 @@ const createTransaction = async (
         errMessage: 0,
         message: "Create tracsaction sucessfully!",
       };
-
+      console.log("CCCD: " + CCCD);
       let plsql = `
       BEGIN
       P_THEM_GIAODICH (:sotien , :noidung, :sotknhan, :sotkrut, :maloaigd, :manv, :cccd);

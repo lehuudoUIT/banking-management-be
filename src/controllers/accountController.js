@@ -11,7 +11,6 @@ const getListAccountByRole = async (req, res) => {
   let response = await getListAccount(maNhom, email);
   return res.status(200).json(response);
 };
-getDetailAccountById;
 
 const postCreateUserAccount = async (req, res) => {
   let { MaKhachHang, LoaiTaiKhoan } = req.body;

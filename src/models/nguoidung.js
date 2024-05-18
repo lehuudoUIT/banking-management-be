@@ -16,6 +16,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "MaNhom",
         targetKey: "MaNhom",
       });
+
+      NguoiDung.hasMany(models.PhieuTietKiem, {
+        foreignKey: "MaKhachHang",
+      });
     }
   }
   NguoiDung.init(
