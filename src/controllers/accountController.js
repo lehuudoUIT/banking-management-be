@@ -120,14 +120,9 @@ const postCheckExistAccount = async (req, res) => {
 };
 
 const postCheckExistCccd = async (req, res) => {
-  const { CCCD } = req.body;
-  if (!CCCD) {
-    return res.status(500).json({
-      errCode: 1,
-      message: "Missing input parameter !",
-    });
-  }
-  let response = await checkExistCccd(CCCD);
+  const { cccd } = req.params;
+
+  let response = await checkExistCccd(cccd);
   return res.status(200).json(response);
 };
 
