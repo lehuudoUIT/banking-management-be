@@ -33,6 +33,21 @@ import {
 
 import { postCreateUserCIF } from "../controllers/userController";
 
+import {
+  getAllRole,
+  postCreateRole,
+  postDeleteRole,
+  postUpdateRole,
+  getAllGroupRole,
+  postCreateGroupRole,
+  postDeleteGroupRole,
+  postUpdateGroupRole,
+  getAllGroup,
+  postCreateGroup,
+  postDeleteGroup,
+  postUpdateGroup,
+} from "../controllers/adminController";
+
 let router = Router();
 
 let initAPIRoutes = (app) => {
@@ -59,7 +74,6 @@ let initAPIRoutes = (app) => {
   // router.post("/customer/transaction/get-all", getAllTransaction);
 
   //saving
-  //router.get("/saving-type/get-all", getAllSavingType);
 
   //admin
   //router.post("/employee/rule/change", postChangeRule);
@@ -80,7 +94,7 @@ let initAPIRoutes = (app) => {
   router.post("/accounts/transfer", postTransferAccount);
   router.post("/accounts/statement", postCreateStatement);
   router.get("/accounts/check-exist/:sotaikhoan", postCheckExistAccount);
-  router.post("/accounts/cccd-exist/:cccd", postCheckExistCccd);
+  router.get("/accounts/cccd-exist/:cccd", postCheckExistCccd);
 
   //! SAVING ACCOUNT
   router.get("/saving-accounts", getAllSaving);
@@ -89,12 +103,28 @@ let initAPIRoutes = (app) => {
   router.post("/saving-accounts/deposit", postDepositSaving);
   router.post("/saving-accounts/withdraw", postWithdrawSaving);
   router.post("/saving-accounts/report", postCreateSavingReport);
+  router.get("/saving-type/get-all", getAllSavingType);
+
   //! TRANSACTION
   router.post("/transaction/get-all", getAllTransaction);
   router.get("/transaction-fees", getAllTransactionFee);
 
   //! USER
   router.post("/user/create", postCreateUserCIF);
+
+  //! ADMIN
+  router.get("/role/get-all", getAllRole);
+  router.post("/role/create", postCreateRole);
+  router.post("/role/delete", postDeleteRole);
+  router.post("/role/update", postUpdateRole);
+  router.get("/group-role/get-all", getAllGroupRole);
+  router.post("/group-role/create", postCreateGroupRole);
+  router.post("/group-role/delete", postDeleteGroupRole);
+  router.post("/group-role/update", postUpdateGroupRole);
+  router.get("/group/get-all", getAllGroup);
+  router.post("/group/create", postCreateGroup);
+  router.post("/group/delete", postDeleteGroup);
+  router.post("/group/update", postUpdateGroup);
 
   return app.use("/api/v1/", router);
 };
