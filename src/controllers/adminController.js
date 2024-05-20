@@ -39,7 +39,17 @@ const postDeleteRole = async (req, res) => {
   let response = await deleteRole(MaChucNang);
   return res.status(200).json(response);
 };
-const postUpdateRole = async (req, res) => {};
+const postUpdateRole = async (req, res) => {
+  const { MaChucNang, TenChucNang, Url } = req.body;
+  if (!TenChucNang || !Url || !MaChucNang) {
+    return res.status(500).json({
+      message: "Missing input parameters",
+      errCode: 1,
+    });
+  }
+  let response = await updateRole(MaChucNang, TenChucNang, Url);
+  return res.status(200).json(response);
+};
 const getAllGroupRole = async (req, res) => {
   let response = await getListGroupRole();
   return res.status(200).json(response);
@@ -66,7 +76,17 @@ const postDeleteGroupRole = async (req, res) => {
   let response = await deleteGroupRole(MaPhanQuyen);
   return res.status(200).json(response);
 };
-const postUpdateGroupRole = async (req, res) => {};
+const postUpdateGroupRole = async (req, res) => {
+  const { MaPhanQuyen, MaChucNang, MaNhom } = req.body;
+  if (!MaPhanQuyen || !MaChucNang || !MaNhom) {
+    return res.status(500).json({
+      message: "Missing input parameters",
+      errCode: 1,
+    });
+  }
+  let response = await updateGroupRole(MaPhanQuyen, MaChucNang, MaNhom);
+  return res.status(200).json(response);
+};
 const getAllGroup = async (req, res) => {
   let response = await getListGroup();
   return res.status(200).json(response);
@@ -93,7 +113,17 @@ const postDeleteGroup = async (req, res) => {
   let response = await deleteGroup(MaNhom);
   return res.status(200).json(response);
 };
-const postUpdateGroup = async (req, res) => {};
+const postUpdateGroup = async (req, res) => {
+  const { MaNhom, TenNhom } = req.body;
+  if (!MaNhom || !TenNhom) {
+    return res.status(500).json({
+      message: "Missing input parameters",
+      errCode: 1,
+    });
+  }
+  let response = await updateGroup(MaNhom, TenNhom);
+  return res.status(200).json(response);
+};
 
 module.exports = {
   getAllRole,

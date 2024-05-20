@@ -97,10 +97,38 @@ const deleteRole = async (MaChucNang) => {
   });
 };
 
-const updateRole = async () => {
-  return new Promise((resolve, reject) => {
+const updateRole = async (MaChucNang, TenChucNang, Url) => {
+  return new Promise(async (resolve, reject) => {
     try {
-    } catch (error) {}
+      //? update role
+      await db.ChucNang.update(
+        {
+          TenChucNang: TenChucNang,
+          Url: Url,
+        },
+        {
+          where: {
+            MaChucNang: MaChucNang,
+          },
+        }
+      ).catch((err) => {
+        console.log(err);
+        resolve({
+          errCode: 0,
+          message: `Update role ${Url} unsuccessfully!`,
+        });
+      });
+      resolve({
+        errCode: 0,
+        message: `Update role ${Url} successfully!`,
+      });
+    } catch (error) {
+      reject({
+        errCode: 3,
+        message: `Update role ${Url} unsuccessfully!`,
+        error: error,
+      });
+    }
   });
 };
 const getListGroupRole = async () => {
@@ -177,10 +205,38 @@ const deleteGroupRole = async (MaPhanQuyen) => {
     }
   });
 };
-const updateGroupRole = async () => {
-  return new Promise((resolve, reject) => {
+const updateGroupRole = async (MaPhanQuyen, MaChucNang, MaNhom) => {
+  return new Promise(async (resolve, reject) => {
     try {
-    } catch (error) {}
+      //? update authorization
+      await db.PhanQuyen.update(
+        {
+          MaChucNang: MaChucNang,
+          MaNhom: MaNhom,
+        },
+        {
+          where: {
+            MaPhanQuyen: MaPhanQuyen,
+          },
+        }
+      ).catch((err) => {
+        console.log(err);
+        resolve({
+          errCode: 0,
+          message: `Update authorization unsuccessfully!`,
+        });
+      });
+      resolve({
+        errCode: 0,
+        message: `Update role authorization successfully!`,
+      });
+    } catch (error) {
+      reject({
+        errCode: 3,
+        message: "Update authorization unsuccessfully!",
+        error: error,
+      });
+    }
   });
 };
 const getListGroup = async () => {
@@ -258,10 +314,37 @@ const deleteGroup = async (MaNhom) => {
     }
   });
 };
-const updateGroup = async () => {
-  return new Promise((resolve, reject) => {
+const updateGroup = async (MaNhom, TenNhom) => {
+  return new Promise(async (resolve, reject) => {
     try {
-    } catch (error) {}
+      //? update authorization
+      await db.NhomNguoiDung.update(
+        {
+          TenNhom: TenNhom,
+        },
+        {
+          where: {
+            MaNhom: MaNhom,
+          },
+        }
+      ).catch((err) => {
+        console.log(err);
+        resolve({
+          errCode: 0,
+          message: `Update group unsuccessfully!`,
+        });
+      });
+      resolve({
+        errCode: 0,
+        message: `Update  group successfully!`,
+      });
+    } catch (error) {
+      reject({
+        errCode: 3,
+        message: "Update group unsuccessfully!",
+        error: error,
+      });
+    }
   });
 };
 
