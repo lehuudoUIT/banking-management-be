@@ -54,6 +54,13 @@ import {
   postUpdateGroup,
 } from "../controllers/adminController";
 
+import {
+  getAllRule,
+  postCreateRule,
+  postDeleteRule,
+  postUpdateRule,
+} from "../controllers/ruleController";
+
 let router = Router();
 
 let initAPIRoutes = (app) => {
@@ -135,6 +142,11 @@ let initAPIRoutes = (app) => {
   router.post("/group/create", postCreateGroup);
   router.post("/group/delete", postDeleteGroup);
   router.post("/group/update", postUpdateGroup);
+  //! Rule
+  router.get("/rule/get-all", getAllRule);
+  router.post("/rule/create", postCreateRule);
+  router.post("/rule/delete", postDeleteRule);
+  router.post("/rule/update", postUpdateRule);
 
   return app.use("/api/v1/", router);
 };
