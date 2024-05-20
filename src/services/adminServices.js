@@ -1,3 +1,4 @@
+import { where } from "sequelize";
 import db from "../models/index";
 
 const getListRole = async () => {
@@ -54,12 +55,48 @@ const createRole = async (TenChucNang, Url, NhomNguoiDung) => {
     }
   });
 };
-const deleteRole = async () => {
-  return new Promise((resolve, reject) => {
+const deleteRole = async (MaChucNang) => {
+  return new Promise(async (resolve, reject) => {
     try {
-    } catch (error) {}
+      let deletedRole = await db.ChucNang.findOne({
+        where: {
+          MaChucNang: MaChucNang,
+        },
+      });
+      //? delete the role
+      await deletedRole.destroy().catch((err) => {
+        resolve({
+          errCode: 2,
+          message: "Delete role unsuccessfully!",
+        });
+      });
+      //? delete the authorizations relate to deleted role
+      let relatedAuthorization = await db.PhanQuyen.findAll({
+        where: {
+          MaChucNang: MaChucNang,
+        },
+        raw: true,
+      }).catch((err) => {
+        console.log(err);
+      });
+      console.log(relatedAuthorization);
+      for (let authorization of relatedAuthorization) {
+        await deleteGroupRole(authorization.MaPhanQuyen);
+      }
+      resolve({
+        errCode: 0,
+        message: `Delete role ${deletedRole.Url} successfully!`,
+      });
+    } catch (error) {
+      reject({
+        errCode: 3,
+        message: "Delete role unsuccessfully!",
+        error: error,
+      });
+    }
   });
 };
+
 const updateRole = async () => {
   return new Promise((resolve, reject) => {
     try {
@@ -110,10 +147,34 @@ const createGroupRole = async (MaNhom, MaChucNang) => {
     }
   });
 };
-const deleteGroupRole = async () => {
-  return new Promise((resolve, reject) => {
+const deleteGroupRole = async (MaPhanQuyen) => {
+  return new Promise(async (resolve, reject) => {
     try {
-    } catch (error) {}
+      let deletedGroupRole = await db.PhanQuyen.findOne({
+        where: {
+          MaPhanQuyen: MaPhanQuyen,
+        },
+      });
+      //? delete the authorization
+      await deletedGroupRole.destroy().catch((err) => {
+        console.log(err);
+        resolve({
+          errCode: 2,
+          message: "Delete authorization unsuccessfully!",
+        });
+      });
+
+      resolve({
+        errCode: 0,
+        message: `Delete authorization successfully!`,
+      });
+    } catch (error) {
+      reject({
+        errCode: 3,
+        message: "Delete authorization unsuccessfully!",
+        error: error,
+      });
+    }
   });
 };
 const updateGroupRole = async () => {
@@ -167,10 +228,34 @@ const createGroup = async (TenNhom) => {
     }
   });
 };
-const deleteGroup = async () => {
-  return new Promise((resolve, reject) => {
+const deleteGroup = async (MaNhom) => {
+  return new Promise(async (resolve, reject) => {
     try {
-    } catch (error) {}
+      let deletedGroup = await db.NhomNguoiDung.findOne({
+        where: {
+          MaNhom: MaNhom,
+        },
+      });
+      //? delete the authorization
+      await deletedGroup.destroy().catch((err) => {
+        console.log(err);
+        resolve({
+          errCode: 2,
+          message: "Delete group unsuccessfully!",
+        });
+      });
+
+      resolve({
+        errCode: 0,
+        message: `Delete group successfully!`,
+      });
+    } catch (error) {
+      reject({
+        errCode: 3,
+        message: "Delete group unsuccessfully!",
+        error: error,
+      });
+    }
   });
 };
 const updateGroup = async () => {
