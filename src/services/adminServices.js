@@ -5,26 +5,53 @@ const getListRole = async () => {
     try {
       let listRole = await db.ChucNang.findAll({ raw: true }).catch((err) => {
         console.log(err);
+        resolve({
+          errCode: 2,
+          message: "Error in BE!",
+          error: err,
+        });
       });
-
-      return resolve({
+      resolve({
         errCode: 0,
         message: "Get list role successfully!",
         listRole: listRole,
       });
     } catch (error) {
       reject({
-        errCode: 1,
+        errCode: 3,
         message: "Get list role unsuccessfully!",
         error: error,
       });
     }
   });
 };
-const createRole = async () => {
-  return new Promise((resolve, reject) => {
+const createRole = async (TenChucNang, Url, NhomNguoiDung) => {
+  return new Promise(async (resolve, reject) => {
     try {
-    } catch (error) {}
+      let chucNang = await db.ChucNang.create({
+        TenChucNang: TenChucNang,
+        Url: Url,
+      }).catch((err) => {
+        console.log(err);
+      });
+
+      let maChucNang = chucNang.MaChucNang;
+
+      for (let group of NhomNguoiDung) {
+        await createGroupRole(group, maChucNang);
+      }
+
+      resolve({
+        errCode: 0,
+        message: "Create role successfully!",
+      });
+    } catch (error) {
+      reject({
+        errCode: 2,
+        message: "Create role unsuccessfully!",
+        error: error,
+      });
+    }
   });
 };
 const deleteRole = async () => {
@@ -46,7 +73,7 @@ const getListGroupRole = async () => {
         console.log(err);
       });
 
-      return resolve({
+      resolve({
         errCode: 0,
         message: "Get list authorization successfully!",
         listRole: listRole,
@@ -60,10 +87,27 @@ const getListGroupRole = async () => {
     }
   });
 };
-const createGroupRole = async () => {
-  return new Promise((resolve, reject) => {
+const createGroupRole = async (MaNhom, MaChucNang) => {
+  return new Promise(async (resolve, reject) => {
     try {
-    } catch (error) {}
+      await db.PhanQuyen.create({
+        MaNhom: MaNhom,
+        MaChucNang: MaChucNang,
+      }).catch((err) => {
+        console.log(err);
+      });
+
+      resolve({
+        errCode: 0,
+        message: "Create authorization successfully!",
+      });
+    } catch (error) {
+      reject({
+        errCode: 2,
+        message: "Create authorization unsuccessfully!",
+        error: error,
+      });
+    }
   });
 };
 const deleteGroupRole = async () => {
@@ -87,7 +131,7 @@ const getListGroup = async () => {
         }
       );
 
-      return resolve({
+      resolve({
         errCode: 0,
         message: "Get list group successfully!",
         listRole: listRole,
@@ -101,10 +145,26 @@ const getListGroup = async () => {
     }
   });
 };
-const createGroup = async () => {
-  return new Promise((resolve, reject) => {
+const createGroup = async (TenNhom) => {
+  return new Promise(async (resolve, reject) => {
     try {
-    } catch (error) {}
+      await db.NhomNguoiDung.create({
+        TenNhom: TenNhom,
+      }).catch((err) => {
+        console.log(err);
+      });
+
+      resolve({
+        errCode: 0,
+        message: "Create group successfully!",
+      });
+    } catch (error) {
+      reject({
+        errCode: 2,
+        message: "Create group unsuccessfully!",
+        error: error,
+      });
+    }
   });
 };
 const deleteGroup = async () => {
