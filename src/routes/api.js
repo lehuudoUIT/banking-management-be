@@ -31,7 +31,13 @@ import {
   postCreateSavingReport,
 } from "../controllers/savingController";
 
-import { postCreateUserCIF } from "../controllers/userController";
+import {
+  postCreateUserCIF,
+  getAllUser,
+  getDetailUserById,
+  postDeleteUser,
+  postUpdateUser,
+} from "../controllers/userController";
 
 import {
   getAllRole,
@@ -111,6 +117,10 @@ let initAPIRoutes = (app) => {
 
   //! USER
   router.post("/user/create", postCreateUserCIF);
+  router.get("/user/get-all", getAllUser);
+  router.get("/user/detail/:id", getDetailUserById);
+  router.post("/user/delete", postDeleteUser);
+  router.post("/user/update", postUpdateUser);
 
   //! ADMIN
   router.get("/role/get-all", getAllRole);
