@@ -45,6 +45,7 @@ let handleUserLogin = (username, password) => {
         groupWithRoles,
         maNhom: user.MaNhom,
         expiresIn: process.env.JWT_EXPIRESIN_IN,
+        user: user,
       };
 
       let token = createJWT(payload);

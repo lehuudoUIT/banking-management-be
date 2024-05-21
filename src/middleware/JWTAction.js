@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 require("dotenv").config();
 
-const nonSecurePaths = ["/", "/register", "/login"];
+const nonSecurePaths = ["/", "/register", "/login", "/user/info", "/logout"];
 // if (nonSecurePaths.includes(req.path)) return next();
 
 const createJWT = (payload) => {
@@ -101,9 +101,36 @@ const checkUserPermission = (req, res, next) => {
   }
 };
 
+const getUserData = (req, res) => {
+  //? Verify token
+  let cookies = req.cookies;
+  if (cookies && cookies.jwt) {
+    let token = cookies.jwt;
+    let decoded = verifyToken(token);
+    if (decoded) {
+      return res.status(200).json({
+        errCode: 0,
+        message: "Get user successfully",
+        user: decoded.user,
+      });
+    } else {
+      return res.status(401).json({
+        errCode: -1,
+        message: "User is not authenticated or session expires",
+      });
+    }
+  } else {
+    return res.status(401).json({
+      errCode: -2,
+      message: "User is not authenticated or session expires",
+    });
+  }
+};
+
 module.exports = {
   createJWT,
   verifyToken,
   checkUserJWT,
   checkUserPermission,
+  getUserData,
 };

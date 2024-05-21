@@ -6,12 +6,10 @@ import {
   getSavingByAccountId,
   getSavingByAccountCCCD,
   createSavingReport,
+  createSavingType,
+  deleteSavingType,
+  updateSavingType,
 } from "../services/savingService";
-
-const getAllSavingType = async (req, res) => {
-  let response = await getSavingType();
-  return res.status(200).json(response);
-};
 
 const getAllSaving = async (req, res) => {
   // TrangThai = 1 get active saving
@@ -103,6 +101,45 @@ const postCreateSavingReport = async (req, res) => {
   return res.status(200).json(response);
 };
 
+const getAllSavingType = async (req, res) => {
+  let response = await getSavingType();
+  return res.status(200).json(response);
+};
+
+const postCreateSavingType = async (req, res) => {
+  const { KyHan, LaiSuat, GhiChu } = req.body;
+  if (!KyHan || !LaiSuat) {
+    return res.status(500).json({
+      message: "Missing input parameters",
+      errCode: 1,
+    });
+  }
+  let response = await createSavingType(KyHan, LaiSuat, GhiChu);
+  return res.status(200).json(response);
+};
+const postDeleteSavingType = async (req, res) => {
+  const { MaLoaiTietKiem } = req.body;
+  if (!MaLoaiTietKiem) {
+    return res.status(500).json({
+      message: "Missing input parameters",
+      errCode: 1,
+    });
+  }
+  let response = await deleteSavingType(MaLoaiTietKiem);
+  return res.status(200).json(response);
+};
+const postUpdateSavingType = async (req, res) => {
+  const { MaLoaiTietKiem, LaiSuat, GhiChu } = req.body;
+  if (!MaLoaiTietKiem || !LaiSuat || !GhiChu) {
+    return res.status(500).json({
+      message: "Missing input parameters",
+      errCode: 1,
+    });
+  }
+  let response = await updateSavingType(MaLoaiTietKiem, LaiSuat, GhiChu);
+  return res.status(200).json(response);
+};
+
 module.exports = {
   getAllSaving,
   getAllSavingType,
@@ -111,4 +148,7 @@ module.exports = {
   postDepositSaving,
   postWithdrawSaving,
   postCreateSavingReport,
+  postCreateSavingType,
+  postDeleteSavingType,
+  postUpdateSavingType,
 };
