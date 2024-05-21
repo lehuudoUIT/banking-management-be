@@ -59,7 +59,7 @@ let initAPIRoutes = (app) => {
   // router.post("/customer/transaction/get-all", getAllTransaction);
 
   //saving
-  //router.get("/saving-type/get-all", getAllSavingType);
+  router.get("/saving-type/get-all", getAllSavingType);
 
   //admin
   //router.post("/employee/rule/change", postChangeRule);
