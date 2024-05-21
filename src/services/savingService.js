@@ -204,7 +204,7 @@ const createSavingReport = async (Ngay, isCreateReport) => {
         console.log(err);
       });
 
-    // Build the query
+    // ? Xây dựng query lấy báo cáo trong ngày lập
     const query = {
       where: {
         [Sequelize.Op.and]: [
@@ -219,6 +219,7 @@ const createSavingReport = async (Ngay, isCreateReport) => {
       attributes: { exclude: ["Ngay"] },
     };
 
+    //? Kiểm tra báo cáo đã lập hay chưa
     let baoCao = await db.BaoCaoDoanhSo.findAll(query).catch((err) => {
       console.log(err);
     });
@@ -233,7 +234,6 @@ const createSavingReport = async (Ngay, isCreateReport) => {
     }
 
     //? Tính tổng thu của từng loại tiết kiệm trong ngày yêu cầu
-
     let Thu = await db.PhieuTietKiem.findAll({
       where: {
         [Op.or]: [
@@ -271,8 +271,8 @@ const createSavingReport = async (Ngay, isCreateReport) => {
       .catch((err) => {
         console.log(err);
       });
-    //? Tính tổng chi của từng loại tiết kiệm trong ngày yêu cầu
 
+    //? Tính tổng chi của từng loại tiết kiệm trong ngày yêu cầu
     let Chi = await db.PhieuTietKiem.findAll({
       where: {
         [Op.or]: [
@@ -325,7 +325,7 @@ const createSavingReport = async (Ngay, isCreateReport) => {
       ThongKe.push(item);
     }
 
-    //? Lưu thống kê vào cơ sở dữ liễu
+    //? Lưu thống kê vào cơ sở dữ liệu
     if (isCreateReport) {
       insertReport(startDate, ThongKe);
     }
