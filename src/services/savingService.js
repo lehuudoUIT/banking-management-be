@@ -166,27 +166,6 @@ const withdrawSaving = (MaPhieu, MaNhanVien) => {
   });
 };
 
-const getSavingType = () => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      let savingTypes = await db.LoaiTietKiem.findAll();
-      resolve({
-        errMessage: 0,
-        message: "Get saving types sucessfully!",
-        savingTypes: savingTypes,
-      }).catch((err) => {
-        console.log(err);
-      });
-    } catch (error) {
-      reject({
-        errMessage: 0,
-        message: "Get saving types failed!",
-        err: error,
-      });
-    }
-  });
-};
-
 const createSavingReport = async (Ngay, isCreateReport) => {
   return new Promise(async (resolve, reject) => {
     //? Lấy ngày lập tiết kiệm
@@ -236,19 +215,9 @@ const createSavingReport = async (Ngay, isCreateReport) => {
     //? Tính tổng thu của từng loại tiết kiệm trong ngày yêu cầu
     let Thu = await db.PhieuTietKiem.findAll({
       where: {
-        [Op.or]: [
-          {
-            NgayMo: {
-              [Op.between]: [startDate, endDate],
-            },
-          },
-          {
-            NgayRut: {
-              [Op.between]: [startDate, endDate],
-            },
-          },
-        ],
-        TrangThai: 1,
+        NgayMo: {
+          [Op.between]: [startDate, endDate],
+        },
       },
       attributes: [
         "MaLoaiTietKiem",
@@ -275,19 +244,9 @@ const createSavingReport = async (Ngay, isCreateReport) => {
     //? Tính tổng chi của từng loại tiết kiệm trong ngày yêu cầu
     let Chi = await db.PhieuTietKiem.findAll({
       where: {
-        [Op.or]: [
-          {
-            NgayMo: {
-              [Op.between]: [startDate, endDate],
-            },
-          },
-          {
-            NgayRut: {
-              [Op.between]: [startDate, endDate],
-            },
-          },
-        ],
-        TrangThai: 0,
+        NgayRut: {
+          [Op.between]: [startDate, endDate],
+        },
       },
       attributes: [
         "MaLoaiTietKiem",
@@ -609,6 +568,116 @@ const getSavingByAccountCCCD = async (CCCD, TrangThai) => {
   });
 };
 
+const getSavingType = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let savingTypes = await db.LoaiTietKiem.findAll();
+      resolve({
+        errMessage: 0,
+        message: "Get saving types sucessfully!",
+        savingTypes: savingTypes,
+      }).catch((err) => {
+        console.log(err);
+      });
+    } catch (error) {
+      reject({
+        errMessage: 0,
+        message: "Get saving types failed!",
+        err: error,
+      });
+    }
+  });
+};
+
+const createSavingType = async (KyHan, LaiSuat, GhiChu) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      await db.LoaiTietKiem.create({
+        KyHan: KyHan,
+        LaiSuat: LaiSuat,
+        GhiChu: GhiChu,
+      }).catch((err) => {
+        console.log(err);
+      });
+
+      resolve({
+        errCode: 0,
+        message: "Create saving type successfully!",
+      });
+    } catch (error) {
+      reject({
+        errCode: 2,
+        message: "Create saving type unsuccessfully!",
+        error: error,
+      });
+    }
+  });
+};
+const deleteSavingType = async (MaLoaiTietKiem) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      //? delete the role
+      await db.LoaiTietKiem.destroy({
+        where: {
+          MaLoaiTietKiem: MaLoaiTietKiem,
+        },
+      }).catch((err) => {
+        console.log(err);
+        resolve({
+          errCode: 2,
+          message: "Delete saving type unsuccessfully!",
+        });
+      });
+
+      resolve({
+        errCode: 0,
+        message: `Delete saving type (id: ${MaLoaiTietKiem}) successfully!`,
+      });
+    } catch (error) {
+      reject({
+        errCode: 3,
+        message: `Delete saving type (id: ${MaLoaiTietKiem}) unsuccessfully!`,
+        error: error,
+      });
+    }
+  });
+};
+
+const updateSavingType = async (MaLoaiTietKiem, LaiSuat, GhiChu) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      //? update role
+      await db.LoaiTietKiem.update(
+        {
+          LaiSuat: LaiSuat,
+          GhiChu: GhiChu,
+        },
+        {
+          where: {
+            MaLoaiTietKiem: MaLoaiTietKiem,
+          },
+        }
+      ).catch((err) => {
+        console.log(err);
+        resolve({
+          errCode: 0,
+          message: `Update saving type(id: ${MaLoaiTietKiem}) unsuccessfully!`,
+        });
+      });
+      resolve({
+        errCode: 0,
+        message: `Update saving type(id: ${MaLoaiTietKiem}) successfully!`,
+      });
+    } catch (error) {
+      reject({
+        errCode: 3,
+        message: `Update saving type(id: ${MaLoaiTietKiem}) unsuccessfully!`,
+        error: error,
+      });
+    }
+  });
+};
+
 module.exports = {
   depositSaving,
   getSavingType,
@@ -618,4 +687,7 @@ module.exports = {
   getListSaving,
   getSavingByAccountId,
   getSavingByAccountCCCD,
+  createSavingType,
+  deleteSavingType,
+  updateSavingType,
 };

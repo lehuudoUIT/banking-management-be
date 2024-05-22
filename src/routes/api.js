@@ -2,7 +2,11 @@ import { Router } from "express";
 
 import { handleLogin, handleSendOtp } from "../controllers/systemController";
 
-import { checkUserJWT, checkUserPermission } from "../middleware/JWTAction";
+import {
+  checkUserJWT,
+  checkUserPermission,
+  getUserData,
+} from "../middleware/JWTAction";
 
 import {
   getAllTransactionFee,
@@ -29,6 +33,9 @@ import {
   postWithdrawSaving,
   getAllSavingType,
   postCreateSavingReport,
+  postCreateSavingType,
+  postDeleteSavingType,
+  postUpdateSavingType,
 } from "../controllers/savingController";
 
 import {
@@ -96,6 +103,12 @@ let initAPIRoutes = (app) => {
   // router.post("/system/account/check-exist", postCheckExistAccount);
   // router.post("/system/account/cccd-exist", postCheckExistCccd);
   router.post("/login", handleLogin);
+  router.post("/logout", (req, res) => {
+    req.clearCookie("jwt", {
+      domain: "localhost",
+      path: "/",
+    });
+  });
   router.post("/system/otp/send", handleSendOtp);
   //transaction
   // new api
@@ -117,7 +130,11 @@ let initAPIRoutes = (app) => {
   router.post("/saving-accounts/deposit", postDepositSaving);
   router.post("/saving-accounts/withdraw", postWithdrawSaving);
   router.post("/saving-accounts/report", postCreateSavingReport);
+  //! Saving-type
   router.get("/saving-type/get-all", getAllSavingType);
+  router.post("/saving-type/create", postCreateSavingType);
+  router.post("/saving-type/delete", postDeleteSavingType);
+  router.post("/saving-type/update", postUpdateSavingType);
 
   //! TRANSACTION
   router.post("/transaction/get-all", getAllTransaction);
@@ -129,6 +146,7 @@ let initAPIRoutes = (app) => {
   router.get("/user/detail/:id", getDetailUserById);
   router.post("/user/delete", postDeleteUser);
   router.post("/user/update", postUpdateUser);
+  router.get("/user/info", getUserData);
 
   //! ADMIN
   router.get("/role/get-all", getAllRole);
