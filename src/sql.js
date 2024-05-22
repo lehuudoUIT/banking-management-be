@@ -206,14 +206,14 @@ ELSE -- deposit transaction
   TONGTIEN := N_SoTien - PHI;
 
   -- Tính số dư của tài khoản sau nộp tiền
-  SELECT "SoDu" INTO SoDuNguon
+  SELECT "SoDu" INTO SoDuDich
   FROM "TaiKhoan"
   WHERE "SoTaiKhoan" = V_SoTKNhan;
-  
-  SoDuNguon := SoDuNguon + TONGTIEN;
+
+  SoDuDich := SoDuDich + TONGTIEN;
 
   UPDATE "TaiKhoan"
-  SET "SoDu" = SoDuNguon
+  SET "SoDu" = SoDuDich
   WHERE "SoTaiKhoan" = V_SoTKNhan;
   
 END IF;
