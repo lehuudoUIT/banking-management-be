@@ -215,19 +215,9 @@ const createSavingReport = async (Ngay, isCreateReport) => {
     //? Tính tổng thu của từng loại tiết kiệm trong ngày yêu cầu
     let Thu = await db.PhieuTietKiem.findAll({
       where: {
-        [Op.or]: [
-          {
-            NgayMo: {
-              [Op.between]: [startDate, endDate],
-            },
-          },
-          {
-            NgayRut: {
-              [Op.between]: [startDate, endDate],
-            },
-          },
-        ],
-        TrangThai: 1,
+        NgayMo: {
+          [Op.between]: [startDate, endDate],
+        },
       },
       attributes: [
         "MaLoaiTietKiem",
@@ -254,19 +244,9 @@ const createSavingReport = async (Ngay, isCreateReport) => {
     //? Tính tổng chi của từng loại tiết kiệm trong ngày yêu cầu
     let Chi = await db.PhieuTietKiem.findAll({
       where: {
-        [Op.or]: [
-          {
-            NgayMo: {
-              [Op.between]: [startDate, endDate],
-            },
-          },
-          {
-            NgayRut: {
-              [Op.between]: [startDate, endDate],
-            },
-          },
-        ],
-        TrangThai: 0,
+        NgayRut: {
+          [Op.between]: [startDate, endDate],
+        },
       },
       attributes: [
         "MaLoaiTietKiem",

@@ -91,7 +91,7 @@ const postWithdrawSaving = async (req, res) => {
 
 const postCreateSavingReport = async (req, res) => {
   const { Ngay, isCreateReport } = req.body;
-  if (!Ngay || !isCreateReport) {
+  if (!Ngay) {
     return res.status(500).json({
       message: "Missing input parameters",
       errCode: 1,
