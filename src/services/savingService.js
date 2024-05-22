@@ -1,7 +1,6 @@
 import { Op, where } from "sequelize";
 import db, { Sequelize } from "../models/index";
 import { v4 as uuidv4 } from "uuid";
-
 // * Tính tiền lãi
 
 const tinhTienLai = (SoTienGui, SoNgayGui, LaiSuat) => {
@@ -190,11 +189,12 @@ const getSavingType = () => {
 
 const createSavingReport = async (Ngay, isCreateReport) => {
   return new Promise(async (resolve, reject) => {
-    //! Extract day, month, year from Ngay
+    //? Lấy ngày lập tiết kiệm
     let ReportDate = new Date(Ngay);
     let startDate = new Date(ReportDate);
     ReportDate.setDate(ReportDate.getDate() + 1);
     let endDate = new Date(ReportDate);
+
     //? Lấy độ dài mã loại tiết kiệm
     let lengthSavingType = await db.LoaiTietKiem.findAll()
       .then((result) => {
@@ -204,6 +204,36 @@ const createSavingReport = async (Ngay, isCreateReport) => {
         console.log(err);
       });
 
+    // ? Xây dựng query lấy báo cáo trong ngày lập
+    const query = {
+      where: {
+        [Sequelize.Op.and]: [
+          Sequelize.where(
+            Sequelize.fn("trunc", Sequelize.col("Ngay")),
+            "=",
+            startDate
+          ),
+        ],
+      },
+      raw: true,
+      attributes: { exclude: ["Ngay"] },
+    };
+
+    //? Kiểm tra báo cáo đã lập hay chưa
+    let baoCao = await db.BaoCaoDoanhSo.findAll(query).catch((err) => {
+      console.log(err);
+    });
+
+    if (baoCao.length > 0) {
+      console.log(`Ngày ${Ngay} đã lập báo cáo`);
+      return resolve({
+        errMessage: 0,
+        message: "Get report sucessfully!",
+        ThongKe: baoCao,
+      });
+    }
+
+    //? Tính tổng thu của từng loại tiết kiệm trong ngày yêu cầu
     let Thu = await db.PhieuTietKiem.findAll({
       where: {
         [Op.or]: [
@@ -242,6 +272,7 @@ const createSavingReport = async (Ngay, isCreateReport) => {
         console.log(err);
       });
 
+    //? Tính tổng chi của từng loại tiết kiệm trong ngày yêu cầu
     let Chi = await db.PhieuTietKiem.findAll({
       where: {
         [Op.or]: [
@@ -283,6 +314,8 @@ const createSavingReport = async (Ngay, isCreateReport) => {
     console.log(Thu);
     console.log(Chi);
     let ThongKe = [];
+
+    //? Tính chênh lệch thu chi
     for (let i = 0; i < lengthSavingType; i++) {
       let item = {};
       item.MaLoaiTietKiem = i + 1;
@@ -291,12 +324,32 @@ const createSavingReport = async (Ngay, isCreateReport) => {
       item.ChenhLech = Thu[i].TongThu - Chi[i].TongChi;
       ThongKe.push(item);
     }
+
+    //? Lưu thống kê vào cơ sở dữ liệu
+    if (isCreateReport) {
+      insertReport(startDate, ThongKe);
+    }
+
     resolve({
       errMessage: 0,
       message: "Get report sucessfully!",
       ThongKe: ThongKe,
     });
   });
+};
+
+const insertReport = async (Ngay, ThongKe) => {
+  for (let loatTietKiem of ThongKe) {
+    await db.BaoCaoDoanhSo.create({
+      Ngay: Ngay,
+      MaLoaiTietKiem: loatTietKiem.MaLoaiTietKiem,
+      TongThu: loatTietKiem.TongThu,
+      TongChi: loatTietKiem.TongChi,
+      ChenhLech: loatTietKiem.ChenhLech,
+    }).catch((err) => {
+      console.log("🚀 ~ insertReport ~ err:", err);
+    });
+  }
 };
 
 const getListSaving = async (manhom, email) => {

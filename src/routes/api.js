@@ -31,7 +31,35 @@ import {
   postCreateSavingReport,
 } from "../controllers/savingController";
 
-import { postCreateUserCIF } from "../controllers/userController";
+import {
+  postCreateUserCIF,
+  getAllUser,
+  getDetailUserById,
+  postDeleteUser,
+  postUpdateUser,
+} from "../controllers/userController";
+
+import {
+  getAllRole,
+  postCreateRole,
+  postDeleteRole,
+  postUpdateRole,
+  getAllGroupRole,
+  postCreateGroupRole,
+  postDeleteGroupRole,
+  postUpdateGroupRole,
+  getAllGroup,
+  postCreateGroup,
+  postDeleteGroup,
+  postUpdateGroup,
+} from "../controllers/adminController";
+
+import {
+  getAllRule,
+  postCreateRule,
+  postDeleteRule,
+  postUpdateRule,
+} from "../controllers/ruleController";
 
 let router = Router();
 
@@ -68,7 +96,7 @@ let initAPIRoutes = (app) => {
   // router.post("/system/account/check-exist", postCheckExistAccount);
   // router.post("/system/account/cccd-exist", postCheckExistCccd);
   router.post("/login", handleLogin);
-  // router.post("/system/otp/send", handleSendOtp);
+  router.post("/system/otp/send", handleSendOtp);
   //transaction
   // new api
   //! ACCOUNT
@@ -80,7 +108,7 @@ let initAPIRoutes = (app) => {
   router.post("/accounts/transfer", postTransferAccount);
   router.post("/accounts/statement", postCreateStatement);
   router.get("/accounts/check-exist/:sotaikhoan", postCheckExistAccount);
-  router.post("/accounts/cccd-exist/:cccd", postCheckExistCccd);
+  router.get("/accounts/cccd-exist/:cccd", postCheckExistCccd);
 
   //! SAVING ACCOUNT
   router.get("/saving-accounts", getAllSaving);
@@ -89,12 +117,37 @@ let initAPIRoutes = (app) => {
   router.post("/saving-accounts/deposit", postDepositSaving);
   router.post("/saving-accounts/withdraw", postWithdrawSaving);
   router.post("/saving-accounts/report", postCreateSavingReport);
+  router.get("/saving-type/get-all", getAllSavingType);
+
   //! TRANSACTION
   router.post("/transaction/get-all", getAllTransaction);
   router.get("/transaction-fees", getAllTransactionFee);
 
   //! USER
   router.post("/user/create", postCreateUserCIF);
+  router.get("/user/get-all", getAllUser);
+  router.get("/user/detail/:id", getDetailUserById);
+  router.post("/user/delete", postDeleteUser);
+  router.post("/user/update", postUpdateUser);
+
+  //! ADMIN
+  router.get("/role/get-all", getAllRole);
+  router.post("/role/create", postCreateRole);
+  router.post("/role/delete", postDeleteRole);
+  router.post("/role/update", postUpdateRole);
+  router.get("/group-role/get-all", getAllGroupRole);
+  router.post("/group-role/create", postCreateGroupRole);
+  router.post("/group-role/delete", postDeleteGroupRole);
+  router.post("/group-role/update", postUpdateGroupRole);
+  router.get("/group/get-all", getAllGroup);
+  router.post("/group/create", postCreateGroup);
+  router.post("/group/delete", postDeleteGroup);
+  router.post("/group/update", postUpdateGroup);
+  //! Rule
+  router.get("/rule/get-all", getAllRule);
+  router.post("/rule/create", postCreateRule);
+  router.post("/rule/delete", postDeleteRule);
+  router.post("/rule/update", postUpdateRule);
 
   return app.use("/api/v1/", router);
 };

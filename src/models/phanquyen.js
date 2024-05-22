@@ -21,13 +21,16 @@ module.exports = (sequelize, DataTypes) => {
   }
   PhanQuyen.init(
     {
+      MaPhanQuyen: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+      },
       MaChucNang: {
         type: DataTypes.INTEGER,
-        primaryKey: true,
       },
       MaNhom: {
         type: DataTypes.INTEGER,
-        primaryKey: true,
       },
     },
     {

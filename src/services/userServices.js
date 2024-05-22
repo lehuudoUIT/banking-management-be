@@ -118,6 +118,131 @@ const checkExistUser = async (Email, SDT, CCCD, username) => {
   return message;
 };
 
+const getListUser = async () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let listUser = await db.NguoiDung.findAll({ raw: true }).catch((err) => {
+        console.log(err);
+      });
+
+      resolve({
+        errCode: 0,
+        message: `Get list user successfully!`,
+        listUser: listUser,
+      });
+    } catch (error) {
+      reject({
+        errCode: 1,
+        message: `Get list user unsuccessfully!`,
+        error: error,
+      });
+    }
+  });
+};
+const getDetailUser = async (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let user = await db.NguoiDung.findOne({
+        where: { MaNguoiDung: id },
+        raw: true,
+      }).catch((err) => {
+        console.log(err);
+      });
+
+      if (!user)
+        return resolve({
+          errCode: 0,
+          message: `User does not exist!`,
+        });
+
+      resolve({
+        errCode: 0,
+        message: `Get detail data of user successfully!`,
+        user: user,
+      });
+    } catch (error) {
+      reject({
+        errCode: 0,
+        message: `Get detail data of user unsuccessfully!`,
+      });
+    }
+  });
+};
+const deleteUser = async (MaNguoiDung) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      await db.NguoiDung.destroy({
+        where: {
+          MaNguoiDung: MaNguoiDung,
+        },
+      }).catch((err) => {
+        console.log(err);
+      });
+
+      resolve({
+        errCode: 0,
+        message: `Delete user (id: ${MaNguoiDung}) successfully!`,
+      });
+    } catch (error) {
+      reject({
+        errCode: 0,
+        message: `Delete user unsuccessfully!`,
+        error: error,
+      });
+    }
+  });
+};
+const updateUser = async (
+  MaNguoiDung,
+  NgheNghiep,
+  Email,
+  SDT,
+  DiaChi,
+  password,
+  MaNhom
+) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      await db.NguoiDung.update(
+        {
+          NgheNghiep: NgheNghiep || undefined,
+          Email: Email || undefined,
+          SDT: SDT || undefined,
+          DiaChi: DiaChi || undefined,
+          password: password || undefined,
+          MaNhom: MaNhom || undefined,
+        },
+        {
+          where: {
+            MaNguoiDung: MaNguoiDung,
+          },
+        }
+      ).catch((err) => {
+        console.log(err);
+        return resolve({
+          errCode: 3,
+          message: `Update user (id: ${MaNguoiDung}) unsuccessfully!`,
+        });
+      });
+
+      resolve({
+        errCode: 0,
+        message: `Update user (id: ${MaNguoiDung}) successfully!`,
+      });
+    } catch (error) {
+      reject({
+        errCode: 0,
+        message: `Update user unsuccessfully!`,
+        error: error,
+      });
+    }
+  });
+};
+
 module.exports = {
   createUser,
+  getListUser,
+  getDetailUser,
+  deleteUser,
+  updateUser,
 };
