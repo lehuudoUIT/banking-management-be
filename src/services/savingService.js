@@ -52,6 +52,7 @@ const depositSaving = async (
             makh: MaKhachHang,
             stk: SoTK || null,
             manv: MaNhanVien,
+            isauto: isAuto,
           },
         })
         .catch((err) => {
