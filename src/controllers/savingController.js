@@ -74,7 +74,7 @@ const postDepositSaving = async (req, res) => {
     MaKhachHang,
     SoTaiKhoan || null,
     MaNhanVien || null,
-    isAuto || "1"
+    isAuto
   );
   return res.status(200).json(response);
 };
