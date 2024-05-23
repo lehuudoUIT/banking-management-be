@@ -146,12 +146,6 @@ function fillMissingMonths(records) {
 const getListSavingRevenue = async (year) => {
   return new Promise(async (resolve, reject) => {
     try {
-      console.log(year);
-      let START_YEAR = new Date(year, 0, 2);
-      let END_YEAR = new Date(year, 11, 31);
-      console.log(START_YEAR);
-      console.log(END_YEAR);
-
       let revenueByMonth = await db.sequelize
         .query(
           `SELECT TO_CHAR("NgayMo", 'MM') AS "Thang", SUM("SoTienGui") AS "TongThu", SUM("SoTienRut") AS "TongChi"
@@ -179,7 +173,7 @@ const getListSavingRevenue = async (year) => {
     } catch (error) {
       console.log(error);
       resolve({
-        errCode: 0,
+        errCode: 1,
         message: "Get statistic unsuccessfully!",
         error: error,
       });
