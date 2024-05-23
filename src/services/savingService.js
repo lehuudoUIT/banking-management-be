@@ -18,7 +18,8 @@ const depositSaving = async (
   MaLoaiTietKiem,
   MaKhachHang,
   SoTK,
-  MaNhanVien
+  MaNhanVien,
+  isAuto
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -26,7 +27,7 @@ const depositSaving = async (
 
       let plsql = `
         BEGIN
-        P_THEM_PHIEUTIETKIEM (:maphieu, :sotien, :phuongthuc, :maloaitk, :makh, :stk, :manv);
+        P_THEM_PHIEUTIETKIEM (:maphieu, :sotien, :phuongthuc, :maloaitk, :makh, :stk, :manv, :isauto);
         END;
         `;
       let replacements = {
@@ -37,6 +38,7 @@ const depositSaving = async (
         makh: MaKhachHang,
         stk: SoTK,
         manv: MaNhanVien,
+        isauto: isAuto,
       };
       console.log(replacements);
       //! Tạo giao dịch tiết kiệm
@@ -50,6 +52,7 @@ const depositSaving = async (
             makh: MaKhachHang,
             stk: SoTK || null,
             manv: MaNhanVien,
+            isauto: isAuto,
           },
         })
         .catch((err) => {

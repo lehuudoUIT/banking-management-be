@@ -232,7 +232,8 @@ CREATE OR REPLACE PROCEDURE P_THEM_PHIEUTIETKIEM(
   N_MaLoaiTietKiem IN "PhieuTietKiem"."MaLoaiTietKiem"%TYPE,
   N_MaKhachHang IN "PhieuTietKiem"."MaKhachHang"%TYPE,
   V_SoTK IN "PhieuTietKiem"."SoTK"%TYPE,
-  N_MaNhanVien IN "GiaoDich"."MaNhanVien"%TYPE
+  N_MaNhanVien IN "GiaoDich"."MaNhanVien"%TYPE,
+  B_isAuto IN CHAR
 )
 IS
 SoDuNguon NUMBER;
@@ -293,7 +294,9 @@ INSERT INTO "PhieuTietKiem" ("MaPhieu", "NgayMo", "SoTienGui", "LaiSuat", "NgayR
 -- Lưu giao dịch nộp tiền vào bảng giao dịch
 INSERT INTO "GiaoDich" ("SoTien", "SoDuNguon", "ThoiGian" ,"NoiDung", "TongTien", "SoTKNhan", "SoTKRut", "MaLoaiGD", "MaNhanVien", "MaPhieu") VALUES (N_SoTienGui, SoDuNguon, CURRENT_TIMESTAMP, 'saving', N_SoTienGui, null, V_SoTK, MaLoaiGD, N_MaNhanVien, V_MaPhieu);
 
+IF B_isAuto = 1 THEN
 P_AUTOMATICALLY_SAVING(V_MaPhieu, N_SoTienGui, V_PhuongThuc , N_MaLoaiTietKiem , N_MaKhachHang , V_SoTK);
+END IF;
 
 END;
 `;

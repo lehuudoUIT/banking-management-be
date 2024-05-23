@@ -68,6 +68,11 @@ import {
   postUpdateRule,
 } from "../controllers/ruleController";
 
+import {
+  getAllStatistic,
+  getAllSavingRevenueByYear,
+} from "../controllers/dashboardController";
+
 let router = Router();
 
 let initAPIRoutes = (app) => {
@@ -168,6 +173,9 @@ let initAPIRoutes = (app) => {
   router.post("/rule/create", postCreateRule);
   router.post("/rule/delete", postDeleteRule);
   router.post("/rule/update", postUpdateRule);
+  //! Dashboard
+  router.get("/dashboard/statistic", getAllStatistic);
+  router.get("/dashboard/saving-revenue/:year", getAllSavingRevenueByYear);
 
   return app.use("/api/v1/", router);
 };
