@@ -59,6 +59,7 @@ const postDepositSaving = async (req, res) => {
     MaLoaiTietKiem,
     MaKhachHang,
     MaNhanVien,
+    isAuto,
   } = req.body;
   if (!SoTienGui || !PhuongThuc || !MaLoaiTietKiem || !MaKhachHang) {
     return res.status(500).json({
@@ -72,7 +73,8 @@ const postDepositSaving = async (req, res) => {
     MaLoaiTietKiem,
     MaKhachHang,
     SoTaiKhoan || null,
-    MaNhanVien || null
+    MaNhanVien || null,
+    isAuto || "1"
   );
   return res.status(200).json(response);
 };
