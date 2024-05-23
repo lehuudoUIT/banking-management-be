@@ -8,7 +8,8 @@ const getAllStatistic = async (req, res) => {
   return res.status(200).json(response);
 };
 const getAllSavingRevenueByYear = async (req, res) => {
-  let response = await getListSavingRevenue();
+  const { year } = req.params;
+  let response = await getListSavingRevenue(year);
   return res.status(200).json(response);
 };
 module.exports = {

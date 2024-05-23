@@ -1,4 +1,4 @@
-import { Op } from "sequelize";
+import { Op, where } from "sequelize";
 import db, { Sequelize } from "../models/index";
 
 const getListStatistic = async () => {
@@ -116,11 +116,75 @@ const getListStatistic = async () => {
       });
     } catch (error) {
       console.log(error);
+      resolve({
+        errCode: 0,
+        message: "Get statistic unsuccessfully!",
+        error: error,
+      });
     }
   });
 };
-const getListSavingRevenue = async () => {
-  return new Promise(async (resolve, reject) => {});
+
+function fillMissingMonths(records) {
+  const monthsInYear = Array.from({ length: 12 }, (_, i) =>
+    (i + 1).toString().padStart(2, "0")
+  );
+  const recordsMap = new Map(records.map((record) => [record.Thang, record]));
+
+  const filledRecords = monthsInYear.map((month) => {
+    const record = recordsMap.get(month);
+    return {
+      Thang: month,
+      TongThu: record ? record.TongThu : 0,
+      TongChi: record && record.TongChi !== null ? record.TongChi : 0,
+    };
+  });
+
+  return filledRecords;
+}
+
+const getListSavingRevenue = async (year) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      console.log(year);
+      let START_YEAR = new Date(year, 0, 2);
+      let END_YEAR = new Date(year, 11, 31);
+      console.log(START_YEAR);
+      console.log(END_YEAR);
+
+      let revenueByMonth = await db.sequelize
+        .query(
+          `SELECT TO_CHAR("NgayMo", 'MM') AS "Thang", SUM("SoTienGui") AS "TongThu", SUM("SoTienRut") AS "TongChi"
+         FROM "PhieuTietKiem"
+         WHERE EXTRACT(YEAR FROM "NgayMo") = :year
+         GROUP BY TO_CHAR("NgayMo", 'MM')
+         ORDER BY 1`,
+          {
+            type: db.sequelize.QueryTypes.SELECT,
+            replacements: { year: year },
+          }
+        )
+        .then((records) => {
+          return fillMissingMonths(records);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+
+      resolve({
+        errCode: 0,
+        message: "Get statistic successfully!",
+        revenueByMonth: revenueByMonth,
+      });
+    } catch (error) {
+      console.log(error);
+      resolve({
+        errCode: 0,
+        message: "Get statistic unsuccessfully!",
+        error: error,
+      });
+    }
+  });
 };
 
 module.exports = {
