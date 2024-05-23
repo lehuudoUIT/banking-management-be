@@ -104,10 +104,12 @@ let initAPIRoutes = (app) => {
   // router.post("/system/account/cccd-exist", postCheckExistCccd);
   router.post("/login", handleLogin);
   router.post("/logout", (req, res) => {
-    req.clearCookie("jwt", {
-      domain: "localhost",
-      path: "/",
-    });
+    // req.clearCookie("jwt", {
+    //   domain: "localhost",
+    //   path: "/",
+    // });
+    res.clearCookie("jwt", { path: "/" });
+    res.end();
   });
   router.post("/system/otp/send", handleSendOtp);
   //transaction
