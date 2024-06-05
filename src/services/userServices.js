@@ -46,10 +46,11 @@ const createUser = async (
             },
           })
           .catch((err) => {
+            let errMessages = err.message.split("\n")[0];
             resolve({
               errMessage: 4,
               message: "Create user failer!",
-              err: err,
+              err: errMessages,
             });
           });
 

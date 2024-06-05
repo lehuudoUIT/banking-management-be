@@ -5,7 +5,7 @@ const createStatement = async (SoTaiKhoan, StartDate, EndDate) => {
   return new Promise((resolve, reject) => {
     try {
       const startDate = new Date(StartDate);
-      const endDate = new Date(EndDate);
+      const endDate = new Date(EndDate).setHours(23, 59, 59);
       let transactions = db.GiaoDich.findAll({
         where: {
           [Op.or]: [{ SoTKNhan: SoTaiKhoan }, { SoTKRut: SoTaiKhoan }],
@@ -206,12 +206,16 @@ const createAccount = async (MaKhachHang, LoaiTaiKhoan) => {
           });
         })
         .catch((err) => {
-          reject({
+          let errMessages = err.message.split("\n")[0];
+
+          resolve({
             errMessage: 3,
             message: "Create account unsuccessfully!",
+            err: errMessages,
           });
         });
     } catch (error) {
+      console.log(error);
       reject({
         errCode: 2,
         message: "Create account unsuccessfully!",
@@ -255,10 +259,12 @@ const createTransaction = async (
           },
         })
         .catch((err) => {
+          let errMessages = err.message.split("\n")[0];
+          console.log(errMessages);
           response = {
             errMessage: 3,
             message: "Create tracsaction failed!",
-            error: err,
+            error: errMessages,
           };
           resolve(response);
         });

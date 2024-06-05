@@ -30,17 +30,7 @@ const depositSaving = async (
         P_THEM_PHIEUTIETKIEM (:maphieu, :sotien, :phuongthuc, :maloaitk, :makh, :stk, :manv, :isauto);
         END;
         `;
-      let replacements = {
-        maphieu: MaPhieu,
-        sotien: SoTienGui,
-        phuongthuc: PhuongThuc,
-        maloaitk: MaLoaiTietKiem,
-        makh: MaKhachHang,
-        stk: SoTK,
-        manv: MaNhanVien,
-        isauto: isAuto,
-      };
-      console.log(replacements);
+
       //! Tạo giao dịch tiết kiệm
       await db.sequelize
         .query(plsql, {
@@ -56,11 +46,12 @@ const depositSaving = async (
           },
         })
         .catch((err) => {
-          console.log(err);
+          let errMessages = err.message.split("\n")[0];
+
           resolve({
             errMessage: 5,
             message: "Create saving failed!",
-            err: err,
+            err: errMessages,
           });
         });
 
@@ -137,10 +128,11 @@ const withdrawSaving = (MaPhieu, MaNhanVien) => {
           replacements: replacements,
         })
         .catch((err) => {
+          let errMessages = err.message.split("\n")[0];
           resolve({
-            errMessage: 0,
+            errMessage: 3,
             message: "Withdraw saving failed!",
-            err: err,
+            err: errMessages,
           });
         });
 
