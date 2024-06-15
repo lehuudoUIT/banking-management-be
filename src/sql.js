@@ -307,7 +307,7 @@ CREATE OR REPLACE PROCEDURE P_TATTOAN_PHIEUTIETKIEM(
   N_MaNhanVien IN "GiaoDich"."MaNhanVien"%TYPE
 )
 IS
-SoDuNguon NUMBER;
+SoDuDich NUMBER;
   ThoiGianGuiTietKiemToiThieu NUMBER;
   V_MESSAGE NVARCHAR2(255);
 NgayGui TIMESTAMP WITH LOCAL TIME ZONE;
@@ -409,15 +409,15 @@ WHERE "MaPhieu" = V_MaPhieu;
 IF SoTaiKhoan IS NOT NULL THEN
 
   -- Cộng tiền tài khoản gửi tiết kiệm
-  SELECT "SoDu" INTO SoDuNguon
+  SELECT "SoDu" INTO SoDuDich
   FROM "TaiKhoan"
   WHERE "SoTaiKhoan" = SoTaiKhoan;
 
-  SoDuNguon := SoDuNguon + 	TienRut;
+  SoDuDich := SoDuDich + 	TienRut;
 
   -- Cộng tiền tài khoản gửi
   UPDATE "TaiKhoan"
-  SET "SoDu" = SoDuNguon
+  SET "SoDu" = SoDuDich
   WHERE "SoTaiKhoan" = SoTaiKhoan;
 END IF;
 
@@ -432,10 +432,9 @@ SET "TrangThai"  = 0
 WHERE "MaPhieu" = V_MaPhieu;
 
 -- Lưu giao dịch nộp tiền vào bảng giao dịch
-INSERT INTO "GiaoDich" ("SoTien", "SoDuNguon", "ThoiGian" ,"NoiDung", "TongTien", "SoTKNhan", "SoTKRut", "MaLoaiGD", "MaNhanVien", "MaPhieu") VALUES (TienRut, SoDuNguon, CURRENT_TIMESTAMP, 'settlement', TienRut, SoTaiKhoan, null, MaLoaiGD, N_MaNhanVien, V_MaPhieu);
+INSERT INTO "GiaoDich" ("SoTien", "SoDuDich", "ThoiGian" ,"NoiDung", "TongTien", "SoTKNhan", "SoTKRut", "MaLoaiGD", "MaNhanVien", "MaPhieu") VALUES (TienRut, SoDuDich, CURRENT_TIMESTAMP, 'settlement', TienRut, SoTaiKhoan, null, MaLoaiGD, N_MaNhanVien, V_MaPhieu);
 
 P_DELETE_JOB(V_MaPhieu);
-
 END;
 `;
 
