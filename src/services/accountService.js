@@ -1,4 +1,4 @@
-import { Op, where } from "sequelize";
+import { Op, where, Transaction } from "sequelize";
 import db from "../models/index";
 
 const createStatement = async (SoTaiKhoan, StartDate, EndDate) => {
@@ -235,6 +235,8 @@ const createTransaction = async (
   CCCD
 ) => {
   return new Promise(async (resolve, reject) => {
+    // const trans =
+
     try {
       let response = {
         errMessage: 0,
@@ -242,10 +244,10 @@ const createTransaction = async (
       };
       console.log("CCCD: " + CCCD);
       let plsql = `
-      BEGIN
-      P_THEM_GIAODICH (:sotien , :noidung, :sotknhan, :sotkrut, :maloaigd, :manv, :cccd);
-      END;
-      `;
+        BEGIN
+        P_THEM_GIAODICH (:sotien , :noidung, :sotknhan, :sotkrut, :maloaigd, :manv, :cccd);
+        END;
+        `;
       await db.sequelize
         .query(plsql, {
           replacements: {
@@ -268,6 +270,7 @@ const createTransaction = async (
           };
           resolve(response);
         });
+
       if (response.errMessage != 3) {
         let transaction = await db.GiaoDich.findOne({
           where: {
@@ -294,6 +297,7 @@ const createTransaction = async (
       }
       resolve(response);
     } catch (error) {
+      console.log(error);
       reject({
         errCode: 2,
         message: "Create transaction failed!",

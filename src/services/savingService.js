@@ -194,18 +194,18 @@ const createSavingReport = async (Ngay, isCreateReport) => {
     };
 
     //? Kiểm tra báo cáo đã lập hay chưa
-    let baoCao = await db.BaoCaoDoanhSo.findAll(query).catch((err) => {
-      console.log(err);
-    });
+    // let baoCao = await db.BaoCaoDoanhSo.findAll(query).catch((err) => {
+    //   console.log(err);
+    // });
 
-    if (baoCao.length > 0) {
-      console.log(`Ngày ${Ngay} đã lập báo cáo`);
-      return resolve({
-        errMessage: 0,
-        message: "Get report sucessfully!",
-        ThongKe: baoCao,
-      });
-    }
+    // if (baoCao.length > 0) {
+    //   console.log(`Ngày ${Ngay} đã lập báo cáo`);
+    //   return resolve({
+    //     errMessage: 0,
+    //     message: "Get report sucessfully!",
+    //     ThongKe: baoCao,
+    //   });
+    // }
 
     //? Tính tổng thu của từng loại tiết kiệm trong ngày yêu cầu
     let Thu = await db.PhieuTietKiem.findAll({
