@@ -43,7 +43,7 @@ io.on("connection", (socket) => {
     socket.on('create-saving', (SoTK) => {
         setTimeout(() => {
             io.to(2).emit('new-saving', SoTK);
-        }, 2000)
+        }, 1000)
     });
 
     socket.on('disconnect', () => {
